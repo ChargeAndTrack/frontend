@@ -1,0 +1,31 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+[data-bs-theme="custom"] {
+  --bs-primary: $teal-700;
+  --bs-primary-rgb: #{to-rgb($teal-700)};
+  --bs-primary-hover: $teal-600;
+  --bs-primary-active: $teal-700;
+
+  --bs-success: #22c55e;
+  --bs-danger: #ef4444;
+  --bs-warning: #facc15;
+  --bs-info: #4ade80;
+  --bs-light: #f0fdf4;
+  --bs-dark: #14532d;
+
+  --bs-emphasis-color-rgb: #{to-rgb($white)};
+
+  .btn-primary {
+    --bs-btn-bg: #{rgba($teal-700, 1)};
+    --bs-btn-border-color: rgba(255, 255, 255, 0.25);
+    --bs-btn-hover-bg: #{rgba($teal-700, .8)};
+    --bs-btn-hover-border-color: rgba(255, 255, 255, 0.25);
+    --bs-btn-active-bg: #{rgba($teal-700, 1)};
+    --bs-btn-active-border-color: rgba(255, 255, 255, 0.25);
+    --bs-btn-focus-border-color: rgba(255, 255, 255, 0.25);
+    --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.5);
+    }
+}
+
+@import "../../node_modules/bootstrap/scss/bootstrap";

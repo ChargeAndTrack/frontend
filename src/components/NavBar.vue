@@ -3,7 +3,7 @@ import NavButton from "@/components/NavButton.vue";
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <nav class="navbar navbar-expand-sm bg-primary">
     <div class="container-fluid">
       <button
         class="navbar-toggler"

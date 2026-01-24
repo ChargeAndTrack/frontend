@@ -1,9 +1,10 @@
 <script setup lang="ts">
-const props = defineProps(["routeName"])
+const props = defineProps(["routeName", "iconName"])
 </script>
 
 <template>
-  <li class="nav-item">
+  <li class="nav-item text-center">
+    <i :class="['bi', `bi-${ props.iconName }`, 'd-sm-none', 'text-white']"></i>
     <RouterLink 
       :to="{ name: props.routeName }"
       class="nav-link">

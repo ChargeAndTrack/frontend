@@ -3,31 +3,28 @@ import NavButton from "@/components/NavButton.vue";
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-sm bg-primary">
-    <div class="container-fluid">
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navContent"
-        aria-controls="navbarSupportedContent"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <NavButton route-name="Login" />
-          <NavButton route-name="Home" />
-          <NavButton route-name="Map" />
-          <NavButton route-name="Manage" />
-          <NavButton route-name="Profile" />
-        </ul>
-      </div>
-      <span class="navbar-brand mb-0 h1">ChargeAndTrack</span>
+  <nav class="navbar bg-primary p-0">
+  <div class="container-fluid d-block">
+    <div class="fixed-sm-top bg-primary d-flex justify-content-between p-2">
+      <ul class="navbar-nav d-none d-sm-flex flex-row gap-sm-3 p-2 p-sm-0 px-sm-3">
+        <NavButton route-name="Home" />
+        <NavButton route-name="Map" />
+        <NavButton route-name="Manage" />
+        <NavButton route-name="Profile" />
+      </ul>
+      <span class="navbar-brand ms-auto mb-0 h1">ChargeAndTrack</span>
     </div>
-  </nav>
+
+    <div class="fixed-bottom d-sm-none bg-primary">
+      <ul class="navbar-nav flex-row gap-sm-3 p-2 p-sm-0 px-sm-3 justify-content-around justify-content-center">
+        <NavButton route-name="Home" icon-name="house" />
+        <NavButton route-name="Map" icon-name="geo-alt-fill" />
+        <NavButton route-name="Manage" icon-name="tools" />
+        <NavButton route-name="Profile" icon-name="person" />
+      </ul>
+    </div>
+  </div>
+</nav>
 </template>
 
 <style scoped>

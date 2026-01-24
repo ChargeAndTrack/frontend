@@ -4,7 +4,7 @@ const props = defineProps(["routeName", "iconName"])
 
 <template>
   <li class="nav-item text-center">
-    <i :class="['bi', `bi-${ props.iconName }`, 'd-sm-none', 'text-white']"></i>
+    <i :class="['bi', `bi-${ props.iconName }`, 'd-md-none', 'text-white']"></i>
     <RouterLink 
       :to="{ name: props.routeName }"
       class="nav-link">

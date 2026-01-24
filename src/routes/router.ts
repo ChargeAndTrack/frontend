@@ -7,12 +7,17 @@ import Profile from '@/pages/ProfilePage.vue';
 import NotFound from '@/pages/NotFound.vue';
 
 const routes = [
-    { path: '/', name: "Home", component: Home },
     { path: '/login', name: "Login", component: Login },
-    { path: '/map', name: "Map", component: Map },
-    { path: '/manage', name: "Manage", component: Manage },
-    { path: '/profile', name: "Profile", component: Profile },
-    { path: '/:pathMatch(.*)*', component: NotFound }
+    {
+        path: '/',
+        children: [
+            { path: '', name: "Home", component: Home },
+            { path: 'map', name: "Map", component: Map },
+            { path: 'manage', name: "Manage", component: Manage },
+            { path: 'profile', name: "Profile", component: Profile },
+            { path: ':pathMatch(.*)*', component: NotFound }
+        ]
+    }
 ];
 
 const router = createRouter({

@@ -7,6 +7,10 @@
   --bs-primary-hover: $teal-600;
   --bs-primary-active: $teal-700;
 
+  &.login-bg {
+    background-color: $teal-100;
+  }
+
   --bs-success: #22c55e;
   --bs-danger: #ef4444;
   --bs-warning: #facc15;
@@ -15,6 +19,11 @@
   --bs-dark: #14532d;
 
   --bs-emphasis-color-rgb: #{to-rgb($white)};
+
+  .btn {
+    --bs-btn-border-color: #{rgba($gray-300, 1)};
+    --bs-btn-hover-bg: #{rgba($gray-500, 1)};
+  }
 
   .btn-primary {
     --bs-btn-bg: #{rgba($teal-700, 1)};
@@ -25,7 +34,7 @@
     --bs-btn-active-border-color: rgba(255, 255, 255, 0.25);
     --bs-btn-focus-border-color: rgba(255, 255, 255, 0.25);
     --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.5);
-    }
+  }
 }
 
 @import "../../node_modules/bootstrap/scss/bootstrap";

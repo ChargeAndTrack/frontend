@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import NavButton from "@/components/NavButton.vue";
+import { useAuthenticationStore } from "@/store/authentication.store";
+
+const authenticationStore = useAuthenticationStore();
 </script>
 
 <template>
@@ -9,7 +12,7 @@ import NavButton from "@/components/NavButton.vue";
         <ul class="navbar-nav d-none d-md-flex flex-row gap-md-3 p-2 p-md-0 px-md-3">
           <NavButton route-name="Home" />
           <NavButton route-name="Map" />
-          <NavButton route-name="Manage" />
+          <NavButton route-name="Manage" v-if="authenticationStore.isAdmin()" />
           <NavButton route-name="Profile" />
         </ul>
         <span class="navbar-brand ms-auto mb-0 h1">ChargeAndTrack</span>
@@ -19,7 +22,7 @@ import NavButton from "@/components/NavButton.vue";
         <ul class="navbar-nav flex-row gap-md-3 p-2 p-md-0 px-md-3 justify-content-around justify-content-center">
           <NavButton route-name="Home" icon-name="house" />
           <NavButton route-name="Map" icon-name="geo-alt-fill" />
-          <NavButton route-name="Manage" icon-name="tools" />
+          <NavButton route-name="Manage" v-if="authenticationStore.isAdmin()" icon-name="tools" />
           <NavButton route-name="Profile" icon-name="person" />
         </ul>
       </div>

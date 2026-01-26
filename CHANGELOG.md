@@ -1,3 +1,16 @@
+## [0.3.0](https://github.com/ChargeAndTrack/frontend/compare/0.2.0...0.3.0) (2026-01-26)
+
+### Features
+
+* **login:** add login page and move paths reachable from navbar as '/' children ([e641c10](https://github.com/ChargeAndTrack/frontend/commit/e641c101e06ca17b1e81408d9cc93f533c6518c0))
+* **login:** add login submit handler and add navigation guard for authentication ([dac6710](https://github.com/ChargeAndTrack/frontend/commit/dac6710d77763e68fccf577f5b577613811defa3))
+* **login:** add user role to authentication store, add forbidden page, make path '/manage' accessible and relative page visible on navbar only with admin role ([0fc0abb](https://github.com/ChargeAndTrack/frontend/commit/0fc0abbc4d7a4f1f5c79e43344f8d4d5947f861d))
+* **login:** define authentication store, create axios instance with baseURL and headers, define login request ([d21c2d0](https://github.com/ChargeAndTrack/frontend/commit/d21c2d0d954f53027dc99d509ec248cb21e02de3))
+
+### Build and continuous integration
+
+* add pinia dependency ([fe0ab27](https://github.com/ChargeAndTrack/frontend/commit/fe0ab274624b2ad70c5c2902dadda365cde978f0))
+
 ## [0.2.0](https://github.com/ChargeAndTrack/frontend/compare/0.1.0...0.2.0) (2026-01-24)
 
 ### Features

@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import NavBar from '@/components/NavBar.vue';
+import { useAuthenticationStore } from './store/authentication.store';
 
-const route = useRoute()
+const route = useRoute();
+const authenticationStore = useAuthenticationStore();
 
 const showNavbar = computed(() => {
   return route.name !== 'Login';
 });
+
+onMounted(() => authenticationStore.restoreSession());
 </script>
 
 <template>

@@ -5,6 +5,7 @@ import Map from '@/pages/MapPage.vue';
 import Manage from '@/pages/ManagePage.vue';
 import Profile from '@/pages/ProfilePage.vue';
 import NotFound from '@/pages/NotFound.vue';
+import { useAuthenticationStore } from '@/store/authentication.store';
 
 const routes = [
     { path: '/login', name: "Login", component: Login },
@@ -23,6 +24,15 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(),
     routes
+});
+
+router.beforeEach((to) => {
+    const authenticationStore = useAuthenticationStore();
+    const isAuthenticated: boolean = !!authenticationStore.token;
+
+    if (!isAuthenticated && to.name !== 'Login') {
+        return { name: 'Login' };
+    }
 });
 
 export default router;

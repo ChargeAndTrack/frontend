@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import router from '@/routes/router';
-import { useAuthenticationStore } from '@/store/authentication.store'
-import { reactive, ref } from 'vue'
+import { useAuthenticationStore } from '@/store/authentication.store';
+import { reactive, ref } from 'vue';
+import PasswordVisibilityButton from '@/components/PasswordVisibilityButton.vue';
 
 const authenticationStore = useAuthenticationStore();
 
+const showPassword = ref(false);
 const error = ref('');
 const loginForm = reactive({ username: '', password: '' });
 
@@ -20,15 +22,10 @@ const login = async () => {
     loginForm.password = '';
   }
 }
-
-const showPassword = ref(false)
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value
-}
 </script>
 
 <template>
-  <div class="row justify-content-center align-items-center vh-100 overflow-y-hidden">
+  <div class="row justify-content-center align-items-center vh-100">
     <div class="card col-11 col-md-5 shadow">
       <div class="d-flex justify-content-center">
         <h1 class="py-2">ChargeAndTrack</h1>
@@ -54,9 +51,7 @@ const togglePasswordVisibility = () => {
               v-model="loginForm.password"
               required
             >
-            <button class="btn btn-outline-secondary" type="button" @click="togglePasswordVisibility">
-              <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-            </button>
+            <PasswordVisibilityButton v-model:show-password="showPassword" />
           </div>
         </div>
         <p v-if="error" class="text-danger">{{ error }}</p>

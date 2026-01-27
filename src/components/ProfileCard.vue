@@ -2,14 +2,10 @@
 import { ref } from 'vue';
 import ProfileField from '@/components/ProfileField.vue';
 import PasswordVisibilityButton from '@/components/PasswordVisibilityButton.vue';
+import type { User } from '@/types/user';
 
 const showPassword = ref(false);
-const props = defineProps({
-  user: {
-    type: Object, // TODO interface
-    required: true
-  }
-});
+const props = defineProps<{ user: User }>();
 </script>
 
 <template>

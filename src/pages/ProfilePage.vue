@@ -1,28 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ProfileCard from '@/components/ProfileCard.vue';
 import CarsCard from '@/components/CarsCard.vue';
+import { getUserRequest } from '@/api/user';
+import type { User } from '@/types/user';
 
-const user = ref({
-  username: 'user1',
-  password: 'user11234',
-  role: 'Base user'
+const user = ref<User>({
+  username: '',
+  password: '',
+  role: '',
+  cars: []
 });
-const cars = ref([
-  { plate: 'AB123CD', capacity: 2000 },
-  { plate: 'EF456GH', capacity: 2000 },
-  { plate: 'IJ789KL', capacity: 1500 },
-  { plate: 'MN123OP', capacity: 1500 },
-  { plate: 'QR456ST', capacity: 1800 },
-  { plate: 'UV789WX', capacity: 1800 },
-  { plate: 'YZ123AB', capacity: 1800 }
-]);
+
+async function getUser() {
+  const { data } = await getUserRequest();
+  user.value = {
+    username: data.username,
+    password: data.password,
+    role: data.role,
+    cars: data.cars
+  }
+}
+
+onMounted(async () => { await getUser(); });
 </script>
 
 <template>
   <div class="d-flex flex-column pt-3 pb-5 pb-md-3">
     <ProfileCard :user="user" />
-    <CarsCard :cars="cars" />
+    <CarsCard :cars="user.cars" />
   </div>
 </template>
 

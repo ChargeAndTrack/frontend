@@ -1,12 +1,8 @@
 <script setup lang="ts">
+import type { Car } from '@/types/car';
 import CarItem from './CarItem.vue';
 
-const props = defineProps({
-  cars: {
-    type: Array<{ plate: string; capacity: number }>, // TODO interface
-    required: true
-  }
-});
+const props = defineProps<{ cars: Car[] }>();
 </script>
 
 <template>
@@ -17,12 +13,15 @@ const props = defineProps({
           <!-- Cars header -->
           <div class="d-flex justify-content-between align-items-center pb-2">
             <h5 class="card-title">Cars</h5>
-            <button class="btn btn-primary rounded-circle">+</button>
+            <button class="btn btn-primary rounded-circle ">
+              <i class="bi bi-plus fs-4"></i>
+            </button>
           </div>
 
           <!-- Cars list -->
           <div class="flex-grow-1 overflow-auto">
-            <CarItem v-for="car in cars" :key="car.plate" :car="car" />
+            <p v-if="props.cars.length === 0">No cars registered.</p>
+            <CarItem v-for="car in props.cars" :key="car.plate" :car="car" />
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ const authenticationStore = useAuthenticationStore();
 </script>
 
 <template>
-  <nav class="navbar bg-primary p-0">
+  <nav class="navbar bg-primary p-0 z-1">
     <div class="container-fluid d-block">
       <div class="fixed-md-top bg-primary d-flex justify-content-between p-2">
         <ul class="navbar-nav d-none d-md-flex flex-row gap-md-3 p-2 p-md-0 px-md-3">

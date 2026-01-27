@@ -1,6 +1,8 @@
 @import "../../node_modules/bootstrap/scss/functions";
 @import "../../node_modules/bootstrap/scss/variables";
 
+$border-teal: #{rgba($teal-800, 1)};
+
 [data-bs-theme="custom"] {
   --bs-primary: $teal-700;
   --bs-primary-rgb: #{to-rgb($teal-700)};
@@ -22,13 +24,23 @@
 
   .btn-primary {
     --bs-btn-bg: #{rgba($teal-700, 1)};
-    --bs-btn-border-color: rgba(255, 255, 255, 0.25);
-    --bs-btn-hover-bg: #{rgba($teal-700, .8)};
-    --bs-btn-hover-border-color: rgba(255, 255, 255, 0.25);
+    --bs-btn-border-color: $border-teal;
+    --bs-btn-hover-bg: #{rgba($teal-800, 1)};
+    --bs-btn-hover-border-color: #{rgba($teal-800, .2)};
     --bs-btn-active-bg: #{rgba($teal-700, 1)};
-    --bs-btn-active-border-color: rgba(255, 255, 255, 0.25);
-    --bs-btn-focus-border-color: rgba(255, 255, 255, 0.25);
-    --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(22, 163, 74, 0.5);
+    --bs-btn-active-border-color: $border-teal;
+    --bs-btn-focus-border-color: $border-teal;
+    --bs-btn-focus-shadow-rgb: 19, 121, 91;
+  }
+
+  .form-check-input:checked {
+    background-color: $teal-700;
+    border-color: $teal-200;
+  }
+
+  .form-check-input:focus {
+    border-color: $teal-200;
+    box-shadow: 0 0 0 0.25rem rgba($teal-300, .8);
   }
 }
 

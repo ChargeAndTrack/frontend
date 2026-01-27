@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const showPassword = defineModel('show-password', {
+const showPassword = defineModel('showPassword', {
     type: Boolean,
     default: false
 });

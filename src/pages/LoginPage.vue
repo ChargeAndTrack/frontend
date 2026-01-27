@@ -51,7 +51,7 @@ const login = async () => {
               v-model="loginForm.password"
               required
             >
-            <PasswordVisibilityButton v-model:show-password="showPassword" />
+            <PasswordVisibilityButton v-model:showPassword="showPassword" />
           </div>
         </div>
         <p v-if="error" class="text-danger">{{ error }}</p>

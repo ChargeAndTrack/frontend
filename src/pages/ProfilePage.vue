@@ -48,7 +48,7 @@ const cars = ref([
                   :value="user.password"
                   readonly
                 >
-                <PasswordVisibilityButton v-model:show-password="showPassword" />
+                <PasswordVisibilityButton v-model:showPassword="showPassword" />
               </div>
             </div>
 

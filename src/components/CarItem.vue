@@ -3,14 +3,19 @@ import type { Car } from '@/types/car';
 
 const props = defineProps<{ car: Car }>();
 const emit = defineEmits<{
-  (e: 'edit', carId: string): void
+  (e: 'edit', carId: string): void,
+  (e: 'delete', carData: { id: string, plate: string }): void
 }>();
 </script>
 
 <template>
   <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-2">
     <div class="d-flex align-items-center">
-      <button type="button" class="btn btn-danger">
+      <button
+        type="button"
+        class="btn btn-danger"
+        @click="emit('delete', { id: props.car._id, plate: props.car.plate })"
+      >
         <i class="bi bi-trash"></i>
       </button>
       <div class="ms-3">

@@ -6,8 +6,9 @@ import CarModal from '@/components/CarModal.vue';
 import { getUserRequest } from '@/api/user';
 import type { User } from '@/types/user';
 import type { CarBody, Car } from '@/types/car';
-import { addCarRequest, getCarRequest, updateCarRequest } from '@/api/cars';
+import { addCarRequest, deleteCarRequest, getCarRequest, updateCarRequest } from '@/api/cars';
 import type { AxiosResponse } from 'axios';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 
 const user = ref<User>({
   username: '',
@@ -61,12 +62,33 @@ const onConfirmEditCar = async (car: CarBody): Promise<void> => {
     editCarError.value = 'Failed to edit car.';
   }
 }
+
+// Delete car logic
+const showConfirmDeleteModal = ref(false);
+const deleteCarId = ref<string>('');
+const deleteCarPlate = ref<string>('');
+const deleteCarError = ref('');
+const onDeleteCar = async (carData: { id: string, plate: string }): Promise<void> => {
+  deleteCarId.value = carData.id;
+  deleteCarPlate.value = carData.plate;
+  showConfirmDeleteModal.value = true;
+}
+const onConfirmDeleteCar = async (): Promise<void> => {
+  deleteCarError.value = '';
+  try {
+    const response: AxiosResponse<{ cars: Car[] }> = await deleteCarRequest(deleteCarId.value);
+    user.value.cars = response.data.cars;
+    showConfirmDeleteModal.value = false;
+  } catch (err: any) {
+    deleteCarError.value = 'Failed to delete car.';
+  }
+}
 </script>
 
 <template>
   <div class="d-flex flex-column pt-3 pb-5 pb-md-3">
     <ProfileCard :user="user" />
-    <CarsCard :cars="user.cars" @add-car="onAddCar" @edit-car="onEditCar" />
+    <CarsCard :cars="user.cars" @add-car="onAddCar" @edit-car="onEditCar" @delete-car="onDeleteCar"/>
     <CarModal
       v-if="showAddCarModal"
       :error="addCarError"
@@ -79,6 +101,13 @@ const onConfirmEditCar = async (car: CarBody): Promise<void> => {
       :error="editCarError"
       @cancel="showEditCarModal = false"
       @confirm="onConfirmEditCar"
+    />
+    <ConfirmDeleteModal
+      v-if="showConfirmDeleteModal"
+      :subject="`car ${deleteCarPlate}`"
+      :error="deleteCarError"
+      @cancel="showConfirmDeleteModal = false"
+      @confirm="onConfirmDeleteCar"
     />
   </div>
 </template>

@@ -13,3 +13,7 @@ export const getCarRequest = async (carId: string): Promise<AxiosResponse<Car>> 
 export const updateCarRequest = async (carId: string, car: CarBody): Promise<AxiosResponse<Car>> => {
     return await api.put<Car>(`/cars/${carId}`, car);
 }
+
+export const deleteCarRequest = async (carId: string): Promise<AxiosResponse<{ cars: Car[] }>> => {
+    return await api.delete<{ cars: Car[] }>(`/cars/${carId}`);
+}

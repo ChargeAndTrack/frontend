@@ -1,4 +1,11 @@
 export interface Car {
+    _id: string;
     plate: string;
-    capacity: number;
+    maxBattery: number;
+    currentBattery: number;
+}
+
+export interface AddCarBody {
+    plate: string;
+    maxBattery: number;
 }

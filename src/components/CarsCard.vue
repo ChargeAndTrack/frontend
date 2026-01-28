@@ -3,6 +3,9 @@ import type { Car } from '@/types/car';
 import CarItem from './CarItem.vue';
 
 const props = defineProps<{ cars: Car[] }>();
+const emit = defineEmits<{
+  (e: 'add-car'): void
+}>()
 </script>
 
 <template>
@@ -13,7 +16,7 @@ const props = defineProps<{ cars: Car[] }>();
           <!-- Cars header -->
           <div class="d-flex justify-content-between align-items-center pb-2">
             <h5 class="card-title">Cars</h5>
-            <button class="btn btn-primary rounded-circle ">
+            <button type="button" class="btn btn-primary rounded-circle" @click="emit('add-car')">
               <i class="bi bi-plus fs-4"></i>
             </button>
           </div>

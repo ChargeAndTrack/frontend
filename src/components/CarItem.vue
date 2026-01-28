@@ -6,10 +6,15 @@ const props = defineProps<{ car: Car }>();
 
 <template>
   <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-2">
-    <div>
-      <div class="fw-semibold">{{ props.car.plate }}</div>
-      <small class="text-muted">Capacity: {{ props.car.capacity }}</small>
+    <div class="d-flex align-items-center">
+      <button type="button" class="btn btn-danger">
+        <i class="bi bi-trash"></i>
+      </button>
+      <div class="ms-3">
+        <div class="fw-semibold">{{ props.car.plate }}</div>
+        <small class="text-muted">Capacity: {{ props.car.maxBattery }}</small>
+      </div>
     </div>
-    <button class="btn btn-primary">Edit</button>
+    <button type="button" class="btn btn-primary mx-1">Edit</button>
   </div>
 </template>

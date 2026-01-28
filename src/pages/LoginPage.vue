@@ -3,6 +3,7 @@ import router from '@/routes/router';
 import { useAuthenticationStore } from '@/store/authentication.store';
 import { reactive, ref } from 'vue';
 import PasswordVisibilityButton from '@/components/PasswordVisibilityButton.vue';
+import FormField from '@/components/FormField.vue';
 
 const authenticationStore = useAuthenticationStore();
 
@@ -31,30 +32,14 @@ const login = async () => {
         <h1 class="py-2">ChargeAndTrack</h1>
       </div>
       <form autocomplete="on" @submit.prevent="login">
-        <div class="form-group">
-          <label for="login-username">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            id="login-username"
-            v-model="loginForm.username"
-            required
-          >
-        </div>
-        <div class="form-password py-2">
-          <label for="login-password">Password</label>
-          <div class="input-group">
-            <input
-              :type="showPassword ? 'text' : 'password'"
-              class="form-control"
-              id="login-password"
-              v-model="loginForm.password"
-              required
-            >
+        <FormField label="Username" id="login-username" v-model:value="loginForm.username" />
+        <FormField label="Password" id="login-password" inputType="password"
+            v-model:value="loginForm.password" v-model:showPassword="showPassword">
+          <template #extra>
             <PasswordVisibilityButton v-model:showPassword="showPassword" />
-          </div>
-        </div>
-        <p v-if="error" class="text-danger">{{ error }}</p>
+          </template>
+        </FormField>
+        <p v-if="error" class="text-danger m-0">{{ error }}</p>
         <div class="d-flex justify-content-end py-3">
           <button type="submit" class="btn btn-primary">Login</button>
         </div>

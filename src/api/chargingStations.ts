@@ -19,6 +19,14 @@ export const getClosestChargingStationRequest = async (address: string) => {
     );
 };
 
-export const  addChargingStationRequest = async (chargingStation: ChargingStation) => {
+export const addChargingStationRequest = async (chargingStation: ChargingStation) => {
     return await api.post(CHARGING_STATION_URL, chargingStation);
+}
+
+export const removeChargingStationRequest = async (chargingStationId: string) => {
+    return await api.delete(`${CHARGING_STATION_URL}/${chargingStationId}`);
+}
+
+export const updateChargingStationRequest = async (chargingStationId: string, updates: ChargingStation) => {
+    return await api.put(`${CHARGING_STATION_URL}/${chargingStationId}`, updates);
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { removeChargingStationRequest, updateChargingStationRequest } from '@/api/chargingStations';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import type { ChargingStation } from '@/types/chargingStation';
 import type { Address, Coordinates } from '@/types/location';
@@ -8,6 +9,10 @@ const props = defineProps<{
   chargingStationId: string,
   chargingStation: ChargingStation,
   chargingStationAddress: Address
+}>();
+const emit = defineEmits<{
+  'remove-charging-station': [],
+  'update-charging-station': [msg: string]
 }>();
 
 const address = ref<string>('');
@@ -19,9 +24,21 @@ const coordinatesToAddress = async () => {
   address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
 };
 
-const updateChargingStation = async () => {};
+const updateChargingStation = async () => {
+  let msg = "";
+  try {
+    await updateChargingStationRequest(props.chargingStationId, props.chargingStation);
+    msg = "Updated successfully the charging station!";
+  } catch {
+    msg = "Error updating the charging station!";
+  }
+  emit('update-charging-station', msg);
+};
 
-const removeChargingStation = async () => {};
+const removeChargingStation = async () => {
+  await removeChargingStationRequest(props.chargingStationId);
+  emit('remove-charging-station');
+};
 
 onMounted(() => coordinatesToAddress);
 </script>

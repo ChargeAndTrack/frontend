@@ -9,10 +9,14 @@ import SearchBar from '@/components/SearchBar.vue';
 import type { ChargingStation } from '@/types/chargingStation';
 import { createGeoPoint, type Address, type Coordinates } from '@/types/location';
 import { reactive, ref } from 'vue';
+import MessageToast from '@/components/MessageToast.vue';
 
 const isModalVisible = ref<boolean>(false);
 const showChargingStation = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
+const isToastVisible = ref<boolean>(false);
+const toastMessage = ref<string>('');
+
 const chargingStation = reactive<{
   id: string,
   station: ChargingStation,
@@ -25,13 +29,23 @@ const chargingStation = reactive<{
 
 const openModal = () => isModalVisible.value = true;
 const closeModal = () => isModalVisible.value = false;
+const showChargingStationCard = () => showChargingStation.value = true;
+const hideChargingStationCard = () => showChargingStation.value = false;
+const showToast = () => isToastVisible.value = true;
+const hideToast = () => isToastVisible.value = false;
+
+const showMessageToast = (msg: string) => {
+  toastMessage.value = msg;
+  showToast()
+  setTimeout(() => { hideToast() }, 5000);
+}
 
 const searchClosestChargingStation = async (input: string) => {
   isLoading.value = true;
-  showChargingStation.value = false;
+  hideChargingStationCard()
   try {
     const res = (await getClosestChargingStationRequest(input)).data;
-    showChargingStation.value = true;
+    showChargingStationCard();
     chargingStation.id = res._id;
     const coords: Coordinates = {
       longitude: res.location.coordinates[0],
@@ -50,7 +64,7 @@ const searchClosestChargingStation = async (input: string) => {
       street: address.street,
       city: address.city
     };
-    showChargingStation.value = true;
+    showChargingStationCard();
   } finally {
     isLoading.value = false;
   }
@@ -58,15 +72,13 @@ const searchClosestChargingStation = async (input: string) => {
 
 const addChargingStation = async (power: number, address: string) => {
   const coordinates = (await resolveAddressToCoordinatesRequest(address)).data;
-  console.log("Coordinates: " + coordinates.lat);
   const chargingStationToAdd: ChargingStation = {
     "power": power,
     location: createGeoPoint({ latitude: coordinates.lat, longitude: coordinates.lng})
   }
-  console.log(await addChargingStationRequest(chargingStationToAdd));
+  await addChargingStationRequest(chargingStationToAdd);
   closeModal();
 };
-
 </script>
 
 <template>
@@ -79,6 +91,8 @@ const addChargingStation = async (power: number, address: string) => {
         :charging-station-id="chargingStation.id"
         :chargingStation="chargingStation.station"
         :chargingStationAddress="chargingStation.address"
+        @remove-charging-station="hideChargingStationCard"
+        @update-charging-station="showMessageToast"
       />
     </div>
     <ChargingStationModal
@@ -88,6 +102,11 @@ const addChargingStation = async (power: number, address: string) => {
       :chargingStationAddress="chargingStation.address"
       @add-charging-station="addChargingStation"
       @close="closeModal"
+    />
+    <MessageToast 
+      :msg="toastMessage"
+      :show="isToastVisible"
+      @close="hideToast"
     />
     <FloatingActionButton @open-modal="openModal" />
   </div>

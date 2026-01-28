@@ -4,8 +4,9 @@ import CarItem from './CarItem.vue';
 
 const props = defineProps<{ cars: Car[] }>();
 const emit = defineEmits<{
-  (e: 'add-car'): void
-}>()
+  (e: 'add-car'): void,
+  (e: 'edit-car', carId: string): void
+}>();
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const emit = defineEmits<{
           <!-- Cars list -->
           <div class="flex-grow-1 overflow-auto">
             <p v-if="props.cars.length === 0">No cars registered.</p>
-            <CarItem v-for="car in props.cars" :key="car.plate" :car="car" />
+            <CarItem v-for="car in props.cars" :key="car.plate" :car="car" @edit="emit('edit-car', $event)" />
           </div>
         </div>
       </div>

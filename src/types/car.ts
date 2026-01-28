@@ -5,7 +5,7 @@ export interface Car {
     currentBattery: number;
 }
 
-export interface AddCarBody {
+export interface CarBody {
     plate: string;
     maxBattery: number;
 }

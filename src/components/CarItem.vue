@@ -2,6 +2,9 @@
 import type { Car } from '@/types/car';
 
 const props = defineProps<{ car: Car }>();
+const emit = defineEmits<{
+  (e: 'edit', carId: string): void
+}>();
 </script>
 
 <template>
@@ -15,6 +18,6 @@ const props = defineProps<{ car: Car }>();
         <small class="text-muted">Capacity: {{ props.car.maxBattery }}</small>
       </div>
     </div>
-    <button type="button" class="btn btn-primary mx-1">Edit</button>
+    <button type="button" class="btn btn-primary mx-1" @click="emit('edit', props.car._id)">Edit</button>
   </div>
 </template>

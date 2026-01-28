@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import type { ChargingStation } from '@/types/chargingStation';
-import type { Address } from '@/types/location';
+import type { Address, Coordinates } from '@/types/location';
 import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
@@ -12,14 +12,18 @@ const props = defineProps<{
 
 const address = ref<string>('');
 const coordinatesToAddress = async () => {
-  address.value = (await reverseCoordinatesToAddressRequest(props.chargingStation.location!.coordinates)).data;
+  const coords: Coordinates = {
+    longitude: props.chargingStation.location!.coordinates[0],
+    latitude: props.chargingStation.location!.coordinates[1]
+  };
+  address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
 };
 
 const updateChargingStation = async () => {};
 
 const removeChargingStation = async () => {};
 
-onMounted(async () => await coordinatesToAddress);
+onMounted(() => coordinatesToAddress);
 </script>
 
 <template>
@@ -27,7 +31,7 @@ onMounted(async () => await coordinatesToAddress);
     <div class="card-header">Charging station</div>
     <div class="card-body mb-3">
         <h2 class="card-title">
-          {{ chargingStationAddress.street }} {{ chargingStationAddress.houseNumber }}, {{ chargingStationAddress.city }}
+          {{ chargingStationAddress.street }}, {{ chargingStationAddress.city }}
         </h2>
         <div class="row row-cols-auto g-4 align-items-center mb-3">
           <div class="col-auto">

@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
+const emit = defineEmits<{
+  search: [input: string]
+}>();
+const textInput = ref('');
+
+const search = () => emit('search', textInput.value);
 </script>
 
 <template>
@@ -10,8 +18,9 @@
         placeholder="Search closest charging station to an address"
         aria-label="Search closest charging station to an address"
         id="searchbar-closest"
+        v-model="textInput"
       >
-      <button type="button" class="btn btn-outline-secondary">
+      <button type="button" class="btn btn-outline-secondary" @click.prevent="search">
         <i class="bi bi-search"></i>
       </button>
     </div>

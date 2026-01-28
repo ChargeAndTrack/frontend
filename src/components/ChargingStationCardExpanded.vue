@@ -1,17 +1,46 @@
 <script setup lang="ts">
+import { reverseCoordinatesToAddressRequest } from '@/api/location';
+import type { ChargingStation } from '@/types/chargingStation';
+import type { Address } from '@/types/location';
+import { onMounted, ref } from 'vue';
+
+const props = defineProps<{
+  chargingStationId: string,
+  chargingStation: ChargingStation,
+  chargingStationAddress: Address
+}>();
+
+const address = ref<string>('');
+const coordinatesToAddress = async () => {
+  address.value = (await reverseCoordinatesToAddressRequest(props.chargingStation.location!.coordinates)).data;
+};
+
+const updateChargingStation = async () => {};
+
+const removeChargingStation = async () => {};
+
+onMounted(async () => await coordinatesToAddress);
 </script>
 
 <template>
   <div class="card col-8 col-md-5 mb-3 p-0 shadow">
     <div class="card-header">Charging station</div>
     <div class="card-body mb-3">
-        <h2 class="card-title">Address</h2>
+        <h2 class="card-title">
+          {{ chargingStationAddress.street }} {{ chargingStationAddress.houseNumber }}, {{ chargingStationAddress.city }}
+        </h2>
         <div class="row row-cols-auto g-4 align-items-center mb-3">
           <div class="col-auto">
             <label for="update-power" class="col-form-label">Power</label>
           </div>
           <div class="col-5">
-            <input type="text" id="update-power" class="form-control" aria-describedby="passwordHelpInline">
+            <input
+              type="text"
+              id="update-power"
+              class="form-control"
+              aria-describedby="Update charging station power"
+              v-model.number="chargingStation.power"
+            >
           </div>
           <div class="col-auto">
             <span id="power-unit-of-measurement" class="form-text">kW</span>
@@ -22,12 +51,18 @@
             <label for="update-enabled" class="col-form-label">Enabled</label>
           </div>
           <div class="col-auto form-switch px-3">
-            <input class="form-check-input mx-0 fs-3" type="checkbox" role="switch" id="switch-enabled" checked>
+            <input
+              class="form-check-input mx-0 fs-3"
+              type="checkbox"
+              role="switch"
+              id="switch-enabled"
+              v-model="chargingStation.enabled"
+            >
           </div>
         </div>
         <div class="row p-3 row-cols-auto justify-content-between">
-          <button type="button" class="btn btn-danger col">Remove</button>
-          <button type="button" class="btn btn-primary col">Update</button>
+          <button type="button" class="btn btn-danger col" @click.prevent="removeChargingStation">Remove</button>
+          <button type="button" class="btn btn-primary col" @click.prevent="updateChargingStation">Update</button>
         </div>
     </div>
   </div>

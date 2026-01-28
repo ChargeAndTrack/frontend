@@ -1,15 +1,22 @@
 <script setup lang="ts">
-import type { ChargingStation } from '@/types/chargingStation';
-import { ref } from 'vue';
+import { reactive } from 'vue';
 
-const props = defineProps({ show: Boolean });
-const emit = defineEmits(['close']);
 
-const chargingStation = ref<ChargingStation>({ power: 0, location: '' });
+const props = defineProps<{show: boolean}>();
+const emit = defineEmits<{
+  "close": [],
+  "add-charging-station": [power: number, address: string]
+}>();
 
-const closeModal = () => emit("close");
+const chargingStation = reactive<{
+  power: number,
+  address: string
+}>({ power: 0, address: '' });
+
+const closeModal = () => emit('close');
 
 const addChargingStation = async () => {
+  emit("add-charging-station", chargingStation.power, chargingStation.address);
   emit("close");
 };
 </script>
@@ -60,7 +67,7 @@ const addChargingStation = async () => {
                   id="add-address"
                   class="form-control"
                   aria-describedby="Set charging station to add address"
-                  v-model="chargingStation.location"
+                  v-model="chargingStation.address"
                 >
               </div>
             </div>

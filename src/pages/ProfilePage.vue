@@ -9,8 +9,12 @@ import type { CarBody, Car } from '@/types/car';
 import { addCarRequest, deleteCarRequest, getCarRequest, updateCarRequest } from '@/api/cars';
 import type { AxiosResponse } from 'axios';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
+import MessageToast from '@/components/MessageToast.vue';
+import { MessageType } from '@/types/message';
+import { useErrorHandler } from '@/api/errorHandling';
 
-const error = ref('');
+const { showSuccess } = useErrorHandler();
+
 const user = ref<User>({
   username: '',
   password: '',
@@ -19,106 +23,96 @@ const user = ref<User>({
 });
 
 const getUser = async (): Promise<void> => {
-  error.value = '';
   try {
     const response: AxiosResponse<User> = await getUserRequest();
     user.value = response.data;
-  } catch (err: any) {
-    error.value = 'Failed to load user data.';
-  }
+  } catch {}
 }
 
 onMounted(async () => { await getUser(); });
 
 // Add car logic
 const showAddCarModal = ref(false);
-const addCarError = ref('');
 const onAddCar = (): void => {
   showAddCarModal.value = true;
 }
 const onConfirmAddCar = async (car: CarBody): Promise<void> => {
-  addCarError.value = '';
   try {
-    const response: AxiosResponse<Car> = await addCarRequest(car);
+    const response = await addCarRequest(car);
     user.value.cars.push(response.data);
     showAddCarModal.value = false;
-  } catch (err: any) {
-    addCarError.value = 'Failed to add car.';
-  }
+    showSuccess('Car added successfully');
+  } catch {}
 }
 
 // Edit car logic
 const showEditCarModal = ref(false);
 const editCarId = ref<string>('');
 const editCarData = ref<CarBody>({ plate: '', maxBattery: 0 });
-const editCarError = ref('');
 const onEditCar = async (carId: string): Promise<void> => {
-  error.value = '';
   editCarId.value = carId;
   try {
     const response: AxiosResponse<Car> = await getCarRequest(carId);
     editCarData.value = response.data;
     showEditCarModal.value = true;
-  } catch (err: any) {
-    error.value = 'Failed to load car data.';
-  }
+  } catch {}
 }
 const onConfirmEditCar = async (car: CarBody): Promise<void> => {
-  editCarError.value = '';
   try {
     const response: AxiosResponse<Car> = await updateCarRequest(editCarId.value, car);
     user.value.cars[user.value.cars.findIndex(c => c._id === editCarId.value)] = response.data;
     showEditCarModal.value = false;
-  } catch (err: any) {
-    editCarError.value = 'Failed to edit car.';
-  }
+    showSuccess('Car updated successfully');
+  } catch {}
 }
 
 // Delete car logic
 const showConfirmDeleteModal = ref(false);
 const deleteCarId = ref<string>('');
 const deleteCarPlate = ref<string>('');
-const deleteCarError = ref('');
 const onDeleteCar = async (carData: { id: string, plate: string }): Promise<void> => {
   deleteCarId.value = carData.id;
   deleteCarPlate.value = carData.plate;
   showConfirmDeleteModal.value = true;
 }
 const onConfirmDeleteCar = async (): Promise<void> => {
-  deleteCarError.value = '';
   try {
     const response: AxiosResponse<{ cars: Car[] }> = await deleteCarRequest(deleteCarId.value);
     user.value.cars = response.data.cars;
     showConfirmDeleteModal.value = false;
-  } catch (err: any) {
-    deleteCarError.value = 'Failed to delete car.';
-  }
+    showSuccess('Car deleted successfully');
+  } catch {}
 }
+
+const toast = ref<{show: boolean, msg: string, type: MessageType }>({ show: false, msg: '', type: MessageType.Info });
 </script>
 
 <template>
   <div class="d-flex flex-column align-items-center pt-3 pb-5 pb-md-3">
-    <p v-if="error" class="text-danger">{{ error }}</p>
     <ProfileCard :user="user" />
     <CarsCard :cars="user.cars" @add-car="onAddCar" @edit-car="onEditCar" @delete-car="onDeleteCar"/>
     <CarModal
       v-if="showAddCarModal"
-      :error="addCarError"
-      @cancel="showAddCarModal = false; addCarError = ''"
+      @cancel="showAddCarModal = false"
       @confirm="onConfirmAddCar"
     />
     <CarModal
       v-if="showEditCarModal"
       :currentCar="editCarData"
-      :error="editCarError"
-      @cancel="showEditCarModal = false; editCarError = ''"
+      @cancel="showEditCarModal = false"
       @confirm="onConfirmEditCar"
     />
     <ConfirmDeleteModal
       v-if="showConfirmDeleteModal"
       :subject="`car ${deleteCarPlate}`"
-      @cancel="showConfirmDeleteModal = false; deleteCarError = ''"
+      @cancel="showConfirmDeleteModal = false"
       @confirm="onConfirmDeleteCar"
+    />
+    <MessageToast
+      :show="toast.show"
+      :msg="toast.msg"
+      :msg-type="toast.type"
+      @close="toast.show = false"
     />
   </div>
 </template>

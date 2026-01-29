@@ -5,7 +5,6 @@ import { ref } from 'vue';
 
 const props = defineProps<{
   currentCar?: CarBody, // set when editing, undefined when adding
-  error: string
 }>();
 const emit = defineEmits<{
   (e: 'cancel'): void,
@@ -34,7 +33,6 @@ const onConfirm = () => emit('confirm', car.value);
           <div class="modal-body">
             <FormField label="Plate" id="add-car-plate" v-model:value="car.plate" />
             <FormField label="Max battery" id="add-car-max-battery" inputType="number" v-model:value="car.maxBattery" />
-            <p v-if="props.error" class="text-danger m-0">{{ props.error }}</p>
           </div>
 
           <div class="modal-footer">

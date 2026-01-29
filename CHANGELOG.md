@@ -1,3 +1,18 @@
+## [0.5.0](https://github.com/ChargeAndTrack/frontend/compare/0.4.0...0.5.0) (2026-01-29)
+
+### Features
+
+* add global error handling ([8719896](https://github.com/ChargeAndTrack/frontend/commit/8719896dc740f2c9e8e4b3aa1e42e1f907a52cd6))
+* **manage:** add addChargingStation request, add onlyEnabledAndAvailable param in getClosestChargingStationRequest,change coordinates type in GeoPoint interface and remove houseNumber from Address interface ([9521e7a](https://github.com/ChargeAndTrack/frontend/commit/9521e7a788598a98e233f864938adea4506c08f4))
+* **manage:** add ChargingStation interface, add modal component to insert a charging station, add props and events for toggling the modal ([e123777](https://github.com/ChargeAndTrack/frontend/commit/e123777b0b2f2dd0008f9cb218479abddbfcfd0c))
+* **manage:** add ConfirmDeleteModal component, move remove and update charging station requests to ManagePage, add form tag to ChargingStationCardExpanded ([97c6915](https://github.com/ChargeAndTrack/frontend/commit/97c69154120b2ca1e3259198c2138b3b00d2a270))
+* **manage:** add Coordinates, GeoPoint and Address interfaces; add location and getClosestChargingStation requests ([9d9f36c](https://github.com/ChargeAndTrack/frontend/commit/9d9f36c2c794700210238f4de3b4d70ba7e4192e))
+* **manage:** add form tag with required attribute in inputs ([eda51b6](https://github.com/ChargeAndTrack/frontend/commit/eda51b64ac9419a6b3d96331f0784e886fefa696))
+* **manage:** add LoadingSpinner component and show it while searching a charging station, hide charging station card until searched one ([b5c34a1](https://github.com/ChargeAndTrack/frontend/commit/b5c34a1b7168249dc22d4eef27832d4ee3fb9a1e))
+* **manage:** add remove and update charging station requests, add MessageToast component and show it after a charging station's update ([ef4a8c5](https://github.com/ChargeAndTrack/frontend/commit/ef4a8c52beb4bd786683c651b77537b2de9b621a))
+* **manage:** first implementation of ManagePage by adding SearchBar, ChargingStationCardExpanded and FloatingActionButton components; small changes in custom theme and navbar ([f46ea6d](https://github.com/ChargeAndTrack/frontend/commit/f46ea6db26c304c7729f681bb95b401259947f71))
+* **manage:** implement searchClosestChargingStation by adding search event in the searchBar, add 'add-charging-station' event to ChargingStationModal, implement ChargingStationCardExpanded data visualization ([16f056f](https://github.com/ChargeAndTrack/frontend/commit/16f056fa1367620f5d47380d37968d9bc6d5b228))
+
 ## [0.4.0](https://github.com/ChargeAndTrack/frontend/compare/0.3.0...0.4.0) (2026-01-29)
 
 ### Features

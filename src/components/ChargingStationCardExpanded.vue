@@ -17,7 +17,9 @@ const coordinatesToAddress = async () => {
     longitude: props.chargingStation.location!.coordinates[0],
     latitude: props.chargingStation.location!.coordinates[1]
   };
-  address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
+  try {
+    address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
+  } catch {}
 };
 
 onMounted(() => coordinatesToAddress);

@@ -9,8 +9,6 @@ import type { CarBody, Car } from '@/types/car';
 import { addCarRequest, deleteCarRequest, getCarRequest, updateCarRequest } from '@/api/cars';
 import type { AxiosResponse } from 'axios';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
-import MessageToast from '@/components/MessageToast.vue';
-import { MessageType } from '@/types/message';
 import { useErrorHandler } from '@/api/errorHandling';
 
 const { showSuccess } = useErrorHandler();
@@ -83,8 +81,6 @@ const onConfirmDeleteCar = async (): Promise<void> => {
     showSuccess('Car deleted successfully');
   } catch {}
 }
-
-const toast = ref<{show: boolean, msg: string, type: MessageType }>({ show: false, msg: '', type: MessageType.Info });
 </script>
 
 <template>
@@ -107,12 +103,6 @@ const toast = ref<{show: boolean, msg: string, type: MessageType }>({ show: fals
       :subject="`car ${deleteCarPlate}`"
       @cancel="showConfirmDeleteModal = false"
       @confirm="onConfirmDeleteCar"
-    />
-    <MessageToast
-      :show="toast.show"
-      :msg="toast.msg"
-      :msg-type="toast.type"
-      @close="toast.show = false"
     />
   </div>
 </template>

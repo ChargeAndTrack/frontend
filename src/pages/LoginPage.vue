@@ -8,18 +8,13 @@ import FormField from '@/components/FormField.vue';
 const authenticationStore = useAuthenticationStore();
 
 const showPassword = ref(false);
-const error = ref('');
 const loginForm = reactive({ username: '', password: '' });
 
 const login = async () => {
-  error.value = '';
   try {
     await authenticationStore.login(loginForm.username, loginForm.password);
     router.push({ name: 'Home' });
   } catch (err: any) {
-    err.response?.status === 404
-      ? error.value = "Credentials not valid"
-      : error.value = "Server error";
     loginForm.password = '';
   }
 }
@@ -39,7 +34,6 @@ const login = async () => {
             <PasswordVisibilityButton v-model:showPassword="showPassword" />
           </template>
         </FormField>
-        <p v-if="error" class="text-danger m-0">{{ error }}</p>
         <div class="d-flex justify-content-end py-3">
           <button type="submit" class="btn btn-primary">Login</button>
         </div>

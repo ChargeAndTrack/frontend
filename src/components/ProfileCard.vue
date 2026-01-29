@@ -6,6 +6,10 @@ import type { User } from '@/types/user';
 
 const showPassword = ref(false);
 const props = defineProps<{ user: User }>();
+
+const formatRole = (role: string): string => {
+  return role.toLowerCase().replace('_', ' ');
+}
 </script>
 
 <template>
@@ -31,7 +35,7 @@ const props = defineProps<{ user: User }>();
           </ProfileField>
 
           <!-- Role -->
-          <ProfileField label="Role" :inputValue="props.user.role" />
+          <ProfileField label="Role" :inputValue="formatRole(props.user.role)" />
         </div>
       </div>
     </div>

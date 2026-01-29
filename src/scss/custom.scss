@@ -20,11 +20,6 @@
 
   --bs-emphasis-color-rgb: #{to-rgb($white)};
 
-  .btn {
-    --bs-btn-border-color: #{rgba($gray-300, 1)};
-    --bs-btn-hover-bg: #{rgba($gray-500, 1)};
-  }
-
   .btn-primary {
     --bs-btn-bg: #{rgba($teal-700, 1)};
     --bs-btn-border-color: rgba(255, 255, 255, 0.25);

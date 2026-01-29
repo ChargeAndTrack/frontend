@@ -9,7 +9,7 @@ const togglePasswordVisibility = () => {
 </script>
 
 <template>
-  <button class="btn btn-outline-secondary" type="button" @click="togglePasswordVisibility">
+  <button class="btn btn-light border" type="button" @click="togglePasswordVisibility">
     <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
   </button>
 </template>

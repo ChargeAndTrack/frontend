@@ -1,3 +1,19 @@
+## [0.4.0](https://github.com/ChargeAndTrack/frontend/compare/0.3.0...0.4.0) (2026-01-29)
+
+### Features
+
+* **profile:** add addCarRequest, add AddCarModal and handle add car; extract FormField component ([0fc41a5](https://github.com/ChargeAndTrack/frontend/commit/0fc41a50592bc7d8d9c6cbfbd1f74b0491812a54))
+* **profile:** add deleteCarRequest, add ConfirmDeleteModal component and handle delete car ([4486ff3](https://github.com/ChargeAndTrack/frontend/commit/4486ff354228e3de81d87bd0de3d5eb93953d78e))
+* **profile:** add getCarRequest and updateCarRequest, update AddCarModal (renamed as CarModal) to use it for both adding and editing, and handle edit car; rename AddCarBody as CarBody ([f7b60a1](https://github.com/ChargeAndTrack/frontend/commit/f7b60a1cba89b22cbc14df2f02b75a1d13c8af32))
+* **profile:** add two new error messages, add function to format role and change some buttons style ([b07bbd8](https://github.com/ChargeAndTrack/frontend/commit/b07bbd82da20871a7e96eaf6ca5f749ae5d2f6c1))
+* **profile:** add User and Car interfaces, add getUser request and call in ProfilePage; use icon in add button ([5f54279](https://github.com/ChargeAndTrack/frontend/commit/5f54279a077a6610ac0923654bbf49a6a7844e0f))
+* **profile:** first implementation of ProfilePage and refactor LoginPage extracting a component ([7402af7](https://github.com/ChargeAndTrack/frontend/commit/7402af785c83b5dfd771a181559d49993d412da8))
+
+### Refactoring
+
+* **profile:** extract components ProfileCard (containing ProfileField(s)) and CarsCard (containing CarItem(s)) from ProfilePage ([7aff5c0](https://github.com/ChargeAndTrack/frontend/commit/7aff5c0fb2c2dfdcdb23697704b27a7c44a15ecb))
+* **profile:** rename show-password as showPassword ([eee1482](https://github.com/ChargeAndTrack/frontend/commit/eee1482ea375f5667c4301f80dff9ca50401ce17))
+
 ## [0.3.0](https://github.com/ChargeAndTrack/frontend/compare/0.2.0...0.3.0) (2026-01-26)
 
 ### Features

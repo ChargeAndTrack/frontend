@@ -117,7 +117,6 @@ const onConfirmDeleteCar = async (): Promise<void> => {
     <ConfirmDeleteModal
       v-if="showConfirmDeleteModal"
       :subject="`car ${deleteCarPlate}`"
-      :error="deleteCarError"
       @cancel="showConfirmDeleteModal = false; deleteCarError = ''"
       @confirm="onConfirmDeleteCar"
     />

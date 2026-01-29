@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { addChargingStationRequest, getClosestChargingStationRequest } from '@/api/chargingStations';
+import { addChargingStationRequest, getClosestChargingStationRequest, removeChargingStationRequest, updateChargingStationRequest } from '@/api/chargingStations';
 import { resolveAddressToCoordinatesRequest, reverseCoordinatesToAddressRequest } from '@/api/location';
 import ChargingStationCardExpanded from '@/components/ChargingStationCardExpanded.vue';
 import ChargingStationModal from '@/components/ChargingStationModal.vue';
@@ -12,12 +12,14 @@ import { reactive, ref } from 'vue';
 import MessageToast from '@/components/MessageToast.vue';
 import { MessageType } from '@/types/message';
 import { useErrorHandler } from '@/api/errorHandling';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 
 const { showSuccess } = useErrorHandler();
 
 const isModalVisible = ref<boolean>(false);
 const showChargingStation = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
+const showConfirmModal = ref<boolean>(false);
 
 const chargingStation = reactive<{
   id: string,
@@ -42,7 +44,7 @@ const hideChargingStationCard = () => showChargingStation.value = false;
 const searchClosestChargingStation = async (input: string) => {
   isLoading.value = true;
   hideChargingStationCard()
-  const res = (await getClosestChargingStationRequest(input).finally(() => isLoading.value = false)).data;
+  const res = (await getClosestChargingStationRequest(input)).data;
   showChargingStationCard();
   chargingStation.id = res._id;
   const coords: Coordinates = {
@@ -63,6 +65,7 @@ const searchClosestChargingStation = async (input: string) => {
     city: address.city
   };
   showChargingStationCard();
+  isLoading.value = false;
 }
 
 const addChargingStation = async (power: number, address: string) => {
@@ -71,10 +74,23 @@ const addChargingStation = async (power: number, address: string) => {
     "power": power,
     location: createGeoPoint({ latitude: coordinates.lat, longitude: coordinates.lng})
   }
-  const res = await addChargingStationRequest(chargingStationToAdd);
-  if (res) {
+  if (await addChargingStationRequest(chargingStationToAdd)) {
     closeModal();
     showSuccess("Add charging station successfully");
+  }
+};
+
+const updateChargingStation = async () => {
+  if (await updateChargingStationRequest(chargingStation.id, chargingStation.station)) {
+    showSuccess("Update the charging station successfully");
+  }
+};
+
+const removeChargingStation = async () => {
+  if (await removeChargingStationRequest(chargingStation.id)) {
+    showSuccess("Removed successfully the charging station!");
+    hideChargingStationCard();
+    showConfirmModal.value = false;
   }
 };
 </script>
@@ -89,7 +105,8 @@ const addChargingStation = async (power: number, address: string) => {
         :charging-station-id="chargingStation.id"
         :chargingStation="chargingStation.station"
         :chargingStationAddress="chargingStation.address"
-        @remove-charging-station="hideChargingStationCard"
+        @remove-charging-station="showConfirmModal = true"
+        @update-charging-station="updateChargingStation"
       />
     </div>
     <ChargingStationModal
@@ -99,6 +116,12 @@ const addChargingStation = async (power: number, address: string) => {
       :chargingStationAddress="chargingStation.address"
       @add-charging-station="addChargingStation"
       @close="closeModal"
+    />
+    <ConfirmDeleteModal
+      v-if="showConfirmModal"
+      :subject="'this charging station'"
+      @cancel="showConfirmModal = false"
+      @confirm="removeChargingStation"
     />
     <MessageToast
       :msg="toast.msg"

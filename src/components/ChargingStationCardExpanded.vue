@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { removeChargingStationRequest, updateChargingStationRequest } from '@/api/chargingStations';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import type { ChargingStation } from '@/types/chargingStation';
 import type { Address, Coordinates } from '@/types/location';
 import { onMounted, ref } from 'vue';
-import { useErrorHandler } from '@/api/errorHandling';
 
 const props = defineProps<{
   chargingStationId: string,
   chargingStation: ChargingStation,
   chargingStationAddress: Address
 }>();
-const emit = defineEmits(['remove-charging-station']);
-
-const { showSuccess } = useErrorHandler();
+const emit = defineEmits(['remove-charging-station', 'update-charging-station']);
 
 const address = ref<string>('');
 const coordinatesToAddress = async () => {
@@ -24,21 +20,6 @@ const coordinatesToAddress = async () => {
   address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
 };
 
-const updateChargingStation = async () => {
-  const res = await updateChargingStationRequest(props.chargingStationId, props.chargingStation);
-  if (res) {
-    showSuccess("Update the charging station successfully");
-  }
-};
-
-const removeChargingStation = async () => {
-  const res = await removeChargingStationRequest(props.chargingStationId);
-  if (res) {
-    showSuccess("Removed successfully the charging station!");
-    emit('remove-charging-station');
-  }
-};
-
 onMounted(() => coordinatesToAddress);
 </script>
 
@@ -46,6 +27,7 @@ onMounted(() => coordinatesToAddress);
   <div class="card col-8 col-md-5 mb-3 p-0 shadow">
     <div class="card-header">Charging station</div>
     <div class="card-body mb-3">
+      <form @submit.prevent="$emit('update-charging-station')">
         <h2 class="card-title">
           {{ chargingStationAddress.street }}, {{ chargingStationAddress.city }}
         </h2>
@@ -55,11 +37,12 @@ onMounted(() => coordinatesToAddress);
           </div>
           <div class="col-5">
             <input
-              type="text"
+              type="number"
               id="update-power"
               class="form-control"
               aria-describedby="Update charging station power"
               v-model.number="chargingStation.power"
+              required
             >
           </div>
           <div class="col-auto">
@@ -81,9 +64,10 @@ onMounted(() => coordinatesToAddress);
           </div>
         </div>
         <div class="row p-3 row-cols-auto justify-content-between">
-          <button type="button" class="btn btn-danger col" @click.prevent="removeChargingStation">Remove</button>
-          <button type="button" class="btn btn-primary col" @click.prevent="updateChargingStation">Update</button>
+          <button type="button" class="btn btn-danger col" @click.prevent="$emit('remove-charging-station')">Remove</button>
+          <button type="submit" class="btn btn-primary col">Update</button>
         </div>
+      </form>
     </div>
   </div>
 </template>

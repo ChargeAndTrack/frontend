@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  subject: string,
-  error: string
+  subject: string
 }>();
 const emit = defineEmits<{
   (e: 'cancel'): void,
@@ -23,7 +22,6 @@ const onCancel = () => emit('cancel');
 
         <div class="modal-body">
           <p class="m-0">Are you sure you want to delete <span class="fw-semibold">{{ props.subject }}</span>?</p>
-          <p v-if="props.error" class="text-danger m-0">{{ props.error }}</p>
         </div>
 
         <div class="modal-footer border-0">

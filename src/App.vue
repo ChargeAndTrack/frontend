@@ -3,9 +3,13 @@ import { useRoute } from 'vue-router'
 import { computed, onMounted } from 'vue'
 import NavBar from '@/components/NavBar.vue';
 import { useAuthenticationStore } from './store/authentication.store';
+import { useErrorHandler } from './api/errorHandling';
+import MessageToast from './components/MessageToast.vue';
 
 const route = useRoute();
 const authenticationStore = useAuthenticationStore();
+
+const { message } = useErrorHandler();
 
 const showNavbar = computed(() => {
   return route.name !== 'Login';
@@ -20,5 +24,11 @@ onMounted(() => authenticationStore.restoreSession());
     <div class="mx-auto">
       <RouterView />
     </div>
+    <MessageToast
+      :show="message.show" 
+      :msg="message.text" 
+      :msg-type="message.type" 
+      @close="message.show = false"
+    />
   </div>
 </template>

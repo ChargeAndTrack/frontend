@@ -4,16 +4,16 @@ import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import type { ChargingStation } from '@/types/chargingStation';
 import type { Address, Coordinates } from '@/types/location';
 import { onMounted, ref } from 'vue';
+import { useErrorHandler } from '@/api/errorHandling';
 
 const props = defineProps<{
   chargingStationId: string,
   chargingStation: ChargingStation,
   chargingStationAddress: Address
 }>();
-const emit = defineEmits<{
-  'remove-charging-station': [],
-  'update-charging-station': [msg: string]
-}>();
+const emit = defineEmits(['remove-charging-station']);
+
+const { showSuccess } = useErrorHandler();
 
 const address = ref<string>('');
 const coordinatesToAddress = async () => {
@@ -25,19 +25,18 @@ const coordinatesToAddress = async () => {
 };
 
 const updateChargingStation = async () => {
-  let msg = "";
-  try {
-    await updateChargingStationRequest(props.chargingStationId, props.chargingStation);
-    msg = "Updated successfully the charging station!";
-  } catch {
-    msg = "Error updating the charging station!";
+  const res = await updateChargingStationRequest(props.chargingStationId, props.chargingStation);
+  if (res) {
+    showSuccess("Update the charging station successfully");
   }
-  emit('update-charging-station', msg);
 };
 
 const removeChargingStation = async () => {
-  await removeChargingStationRequest(props.chargingStationId);
-  emit('remove-charging-station');
+  const res = await removeChargingStationRequest(props.chargingStationId);
+  if (res) {
+    showSuccess("Removed successfully the charging station!");
+    emit('remove-charging-station');
+  }
 };
 
 onMounted(() => coordinatesToAddress);

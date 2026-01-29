@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{ msg: string; show: boolean }>();
+import type { MessageType } from '@/types/message';
+
+const props = defineProps<{ show: boolean, msg: string, msgType: MessageType }>();
 const emit = defineEmits(['close']);
 
 </script>
@@ -8,7 +10,7 @@ const emit = defineEmits(['close']);
   <div class="toast-container position-fixed bottom-0 mb-5 mb-md-0 start-50 translate-middle-x p-5 z-5">
     <div
       class="toast align-items-center"
-      :class="{ 'show': show }"
+      :class="[{ 'show': show }, `border-${props.msgType}`]"
       role="alert"
       aria-live="assertive"
       aria-atomic="true"

@@ -1,3 +1,13 @@
+## [0.6.0](https://github.com/ChargeAndTrack/frontend/compare/0.5.0...0.6.0) (2026-01-30)
+
+### Features
+
+* **profile:** use global error handling in ProfilePage ([9077ed6](https://github.com/ChargeAndTrack/frontend/commit/9077ed6bfd0d2a92dc9e77e31c18e9108778c46c))
+
+### Refactoring
+
+* priority to error message from backend if present, replace ifs with try-catch and remove useless MessageToasts ([515e49f](https://github.com/ChargeAndTrack/frontend/commit/515e49f69e49f8a48e1bb9ec8c34cb3e3d0f814f))
+
 ## [0.5.0](https://github.com/ChargeAndTrack/frontend/compare/0.4.0...0.5.0) (2026-01-29)
 
 ### Features

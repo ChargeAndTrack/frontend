@@ -84,7 +84,7 @@ const onConfirmDeleteCar = async (): Promise<void> => {
 </script>
 
 <template>
-  <div class="d-flex flex-column align-items-center pt-3 pb-5 pb-md-3">
+  <div class="container-fluid d-flex flex-column align-items-center pt-3 pb-5 pb-md-3">
     <ProfileCard :user="user" />
     <CarsCard :cars="user.cars" @add-car="onAddCar" @edit-car="onEditCar" @delete-car="onDeleteCar"/>
     <CarModal

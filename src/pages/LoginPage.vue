@@ -21,7 +21,7 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="row justify-content-center align-items-center vh-100">
+  <div class="container-fluid row justify-content-center align-items-center vh-100">
     <div class="card col-11 col-md-5 shadow">
       <div class="d-flex justify-content-center">
         <h1 class="py-2">ChargeAndTrack</h1>

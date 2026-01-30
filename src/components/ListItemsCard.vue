@@ -2,9 +2,9 @@
 </script>
 
 <template>
-  <div class="container-fluid pt-2 pb-5 pb-md-0">
+  <div class="container-fluid">
     <div class="row justify-content-center">
-      <div class="card shadow col-8 col-md-6 d-flex flex-column">
+      <div class="card shadow col-10 col-md-8 d-flex flex-column">
         <div class="card-body d-flex flex-column">
           <div class="card-header">
             <slot name="card-header"></slot>

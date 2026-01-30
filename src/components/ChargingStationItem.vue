@@ -18,6 +18,6 @@ const props = defineProps<{
         <small class="text-muted">Power: {{ props.chargingStation.power }}</small>
       </div>
     </div>
-    <i class="bi bi-ev-station"></i>
+    <i class="bi bi-ev-station fs-4"></i>
   </div>
 </template>

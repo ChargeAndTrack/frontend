@@ -3,6 +3,7 @@ import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import type { ChargingStation } from '@/types/chargingStation';
 import type { Address, Coordinates } from '@/types/location';
 import { onMounted, ref } from 'vue';
+import ShowFieldsCard from './ShowFieldsCard.vue';
 
 const props = defineProps<{
   chargingStationId: string,
@@ -26,9 +27,9 @@ onMounted(() => coordinatesToAddress);
 </script>
 
 <template>
-  <div class="card col-8 col-md-5 mb-3 p-0 shadow">
-    <div class="card-header">Charging station</div>
-    <div class="card-body mb-3">
+  <ShowFieldsCard>
+    <template #card-header>Charging station</template>
+    <template #card-body>
       <form @submit.prevent="$emit('update-charging-station')">
         <h2 class="card-title">
           {{ chargingStationAddress.street }}, {{ chargingStationAddress.city }}
@@ -70,8 +71,8 @@ onMounted(() => coordinatesToAddress);
           <button type="submit" class="btn btn-primary col">Update</button>
         </div>
       </form>
-    </div>
-  </div>
+    </template>
+  </ShowFieldsCard>
 </template>
 
 

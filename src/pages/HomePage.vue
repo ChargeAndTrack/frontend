@@ -5,6 +5,23 @@ import type { ChargingStation } from '@/types/chargingStation';
 import type { Address } from '@/types/location';
 import { reactive, ref } from 'vue';
 import ListItemsCard from '@/components/ListItemsCard.vue';
+import type { Car } from '@/types/car';
+import ChargingCarItem from '@/components/ChargingCarItem.vue';
+
+const cars = ref<Car[]>([
+  {
+    _id: "c1",
+    plate: "AB123CD",
+    maxBattery: 800,
+    currentBattery: 55
+  },
+  {
+    _id: "c2",
+    plate: "FE456GH",
+    maxBattery: 500,
+    currentBattery: 78
+  }
+]);
 
 const searchText = ref<string>('');
 const chargingStations = reactive<[{
@@ -34,7 +51,7 @@ const llmSearch = async () => {};
       </template>
     </SearchBar>
 
-    <ListItemsCard>
+    <ListItemsCard class="mb-5">
       <template #card-header>
         <h5 class="card-title">Charging stations</h5>
       </template>
@@ -47,6 +64,12 @@ const llmSearch = async () => {};
         />
       </template>
     </ListItemsCard>
+
+    <ChargingCarItem
+      v-for="car in cars"
+      :key="car.plate"
+      :car="car"
+    />
   </div>
 </template>
 

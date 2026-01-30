@@ -106,6 +106,7 @@ const removeChargingStation = async () => {
           placeholder="Search closest charging station to an address"
           aria-label="Search closest charging station to an address"
           id="searchbar-closest"
+          v-model="searchText"
         >
       </template>
     </SearchBar>

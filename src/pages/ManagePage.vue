@@ -14,6 +14,7 @@ import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
 
 const { showSuccess } = useErrorHandler();
 
+const searchText = ref<string>('');
 const isModalVisible = ref<boolean>(false);
 const showChargingStation = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
@@ -97,7 +98,17 @@ const removeChargingStation = async () => {
 
 <template>
   <div class="container-fluid justify-content-center overflow-y-hidden">
-    <SearchBar @search="searchClosestChargingStation" />
+    <SearchBar v-model:search-text="searchText" @search="searchClosestChargingStation">
+      <template #text-input>
+        <input
+          type="text"
+          class="form-control text-truncate"
+          placeholder="Search closest charging station to an address"
+          aria-label="Search closest charging station to an address"
+          id="searchbar-closest"
+        >
+      </template>
+    </SearchBar>
     <div class="row justify-content-center">
       <LoadingSpinner v-if="isLoading" />
       <ChargingStationCardExpanded

@@ -33,6 +33,10 @@ $border-teal: #{rgba($teal-800, 1)};
     --bs-btn-focus-shadow-rgb: 19, 121, 91;
   }
 
+  .card-header {
+    --bs-card-cap-bg: #{rgba($white, 1)};
+  }
+
   .form-check-input:checked {
     background-color: $teal-700;
     border-color: $teal-200;

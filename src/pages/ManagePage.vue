@@ -97,7 +97,7 @@ const removeChargingStation = async () => {
 
 <template>
   <div class="container-fluid justify-content-center overflow-y-hidden">
-    <SearchBar v-model:search-text="searchText" @search="searchClosestChargingStation">
+    <SearchBar class="row py-4 px-2 sticky-top" v-model:search-text="searchText" @search="searchClosestChargingStation">
       <template #text-input>
         <input
           type="text"
@@ -133,7 +133,11 @@ const removeChargingStation = async () => {
       @cancel="showConfirmModal = false"
       @confirm="removeChargingStation"
     />
-    <FloatingActionButton @open-modal="openModal" />
+    <FloatingActionButton @click="openModal">
+      <template #content>
+        <i class="bi bi-plus fs-3"></i>
+      </template>
+    </FloatingActionButton>
   </div>
 </template>
 

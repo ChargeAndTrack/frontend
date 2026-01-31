@@ -97,8 +97,12 @@ const removeChargingStation = async () => {
 
 <template>
   <div class="container-fluid justify-content-center overflow-y-hidden">
-    <SearchBar @search="searchClosestChargingStation" />
-    <div class="row justify-content-center">
+    <SearchBar
+      class="row py-4 px-2 sticky-top"
+      placeholder="Search closest charging station to an address"
+      @search="searchClosestChargingStation"
+    />
+    <div class="row justify-content-center mt-3">
       <LoadingSpinner v-if="isLoading" />
       <ChargingStationCardExpanded
         v-else-if="showChargingStation"
@@ -123,7 +127,11 @@ const removeChargingStation = async () => {
       @cancel="showConfirmModal = false"
       @confirm="removeChargingStation"
     />
-    <FloatingActionButton @open-modal="openModal" />
+    <FloatingActionButton @click="openModal">
+      <template #content>
+        <i class="bi bi-plus fs-3"></i>
+      </template>
+    </FloatingActionButton>
   </div>
 </template>
 

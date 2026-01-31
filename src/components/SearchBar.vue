@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+const props = defineProps<{
+  placeholder?: string
+}>();
 const emit = defineEmits<{
   search: [input: string]
 }>();
@@ -10,17 +13,17 @@ const search = () => emit('search', textInput.value);
 </script>
 
 <template>
-  <div class="row py-4 px-2 sticky-top">
-    <div class="input-group mb-3">
+  <div>
+    <div class="input-group">
       <input
         type="text"
         class="form-control text-truncate"
-        placeholder="Search closest charging station to an address"
-        aria-label="Search closest charging station to an address"
+        :placeholder="placeholder"
+        :aria-label="placeholder"
         id="searchbar-closest"
         v-model="textInput"
       >
-      <button type="button" class="btn btn-outline-secondary" @click.prevent="search">
+      <button type="button" class="btn btn-light border" @click.prevent="search">
         <i class="bi bi-search"></i>
       </button>
     </div>

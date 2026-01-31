@@ -25,7 +25,7 @@ const getUser = async (): Promise<void> => {
     const response: AxiosResponse<User> = await getUserRequest();
     user.value = response.data;
   } catch {}
-}
+};
 
 onMounted(async () => { await getUser(); });
 
@@ -33,15 +33,15 @@ onMounted(async () => { await getUser(); });
 const showAddCarModal = ref(false);
 const onAddCar = (): void => {
   showAddCarModal.value = true;
-}
+};
 const onConfirmAddCar = async (car: CarBody): Promise<void> => {
   try {
-    const response = await addCarRequest(car);
-    user.value.cars.push(response.data);
+    const newCar: Car = (await addCarRequest(car)).data;
+    user.value.cars.push(newCar);
     showAddCarModal.value = false;
     showSuccess('Car added successfully');
   } catch {}
-}
+};
 
 // Edit car logic
 const showEditCarModal = ref(false);
@@ -50,19 +50,19 @@ const editCarData = ref<CarBody>({ plate: '', maxBattery: 0 });
 const onEditCar = async (carId: string): Promise<void> => {
   editCarId.value = carId;
   try {
-    const response: AxiosResponse<Car> = await getCarRequest(carId);
-    editCarData.value = response.data;
+    const car: Car = (await getCarRequest(carId)).data;
+    editCarData.value = car;
     showEditCarModal.value = true;
   } catch {}
-}
+};
 const onConfirmEditCar = async (car: CarBody): Promise<void> => {
   try {
-    const response: AxiosResponse<Car> = await updateCarRequest(editCarId.value, car);
-    user.value.cars[user.value.cars.findIndex(c => c._id === editCarId.value)] = response.data;
+    const updatedCar: Car = (await updateCarRequest(editCarId.value, car)).data;
+    user.value.cars[user.value.cars.findIndex(c => c._id === editCarId.value)] = updatedCar;
     showEditCarModal.value = false;
     showSuccess('Car updated successfully');
   } catch {}
-}
+};
 
 // Delete car logic
 const showConfirmDeleteModal = ref(false);
@@ -72,15 +72,15 @@ const onDeleteCar = async (carData: { id: string, plate: string }): Promise<void
   deleteCarId.value = carData.id;
   deleteCarPlate.value = carData.plate;
   showConfirmDeleteModal.value = true;
-}
+};
 const onConfirmDeleteCar = async (): Promise<void> => {
   try {
-    const response: AxiosResponse<{ cars: Car[] }> = await deleteCarRequest(deleteCarId.value);
-    user.value.cars = response.data.cars;
+    const cars: Car[] = (await deleteCarRequest(deleteCarId.value)).data.cars;
+    user.value.cars = cars;
     showConfirmDeleteModal.value = false;
     showSuccess('Car deleted successfully');
   } catch {}
-}
+};
 </script>
 
 <template>

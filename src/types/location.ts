@@ -1,6 +1,6 @@
 export interface Coordinates {
-    latitude: number,
-    longitude: number
+  lat: number,
+  lng: number
 }
 
 export interface GeoPoint {
@@ -9,16 +9,19 @@ export interface GeoPoint {
 }
 
 export const createGeoPoint = (coords: Coordinates, type?: string): GeoPoint => {
-    return {
-        "type": type ?? "Point",
-        coordinates: [coords.longitude, coords.latitude]
-    };
+  return {
+    "type": type ?? "Point",
+    coordinates: [coords.lng, coords.lat]
+  };
 };
 
 export interface Address {
     street: string,
-    houseNumber?: number,
-    city: string
+    houseNumber?: string,
+    city: string,
+    postalCode?: string,
+    region?: string,
+    country: string
 }
 
 export const formatAddress = (address: Address): string => {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ChargingStation } from '@/types/chargingStation';
+import type { UpdatableChargingStation } from '@/types/chargingStation';
 import ShowFieldsCard from './ShowFieldsCard.vue';
 
 const props = defineProps<{
-  chargingStation: ChargingStation,
+  chargingStation: UpdatableChargingStation,
   chargingStationAddress: string
 }>();
 const emit = defineEmits(['remove-charging-station', 'update-charging-station']);

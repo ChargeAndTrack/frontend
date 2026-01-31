@@ -1,19 +1,21 @@
-import type { Coordinates } from "@/types/location";
+import type { Address, Coordinates } from "@/types/location";
 import { api } from "./api";
+import type { AxiosResponse } from "node_modules/axios/index.d.cts";
 
 const LOCATION_URL: string = "/location";
 
-export const resolveAddressToCoordinatesRequest = async (address: string) => {
-    return await api.get(`${LOCATION_URL}/resolve`, { params: { q: address } });
+export const resolveAddressToCoordinatesRequest = async (address: string): Promise<AxiosResponse<Coordinates>> => {
+    return await api.get<Coordinates>(`${LOCATION_URL}/resolve`, { params: { q: address } });
 }
 
-export const reverseCoordinatesToAddressRequest = async (coordinates: Coordinates) => {
-    return await api.get(
+export const reverseCoordinatesToAddressRequest = async (coordinates: Coordinates)
+        : Promise<AxiosResponse<{ address: Address }>> => {
+    return await api.get<{ address: Address }>(
         `${LOCATION_URL}/reverse`,
         {
             params: {
-                lat: coordinates.latitude,
-                lng: coordinates.longitude
+                lat: coordinates.lat,
+                lng: coordinates.lng
             }
         }
     );

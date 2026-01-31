@@ -11,6 +11,10 @@ const props = defineProps({
   required: {
     type: Boolean,
     default: true
+  },
+  readonly: {
+    type: Boolean,
+    default: false
   }
 });
 </script>
@@ -25,6 +29,7 @@ const props = defineProps({
         :id="id"
         v-model="value"
         :required="required"
+        :readonly="readonly"
       />
       <slot name="extra"></slot>
     </div>

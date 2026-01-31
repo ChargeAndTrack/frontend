@@ -2,11 +2,11 @@
 import { addChargingStationRequest, getClosestChargingStationRequest, removeChargingStationRequest, updateChargingStationRequest } from '@/api/chargingStations';
 import { resolveAddressToCoordinatesRequest, reverseCoordinatesToAddressRequest } from '@/api/location';
 import ChargingStationCardExpanded from '@/components/ChargingStationCardExpanded.vue';
-import ChargingStationModal from '@/components/ChargingStationModal.vue';
+import AddChargingStationModal from '@/components/AddChargingStationModal.vue';
 import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import type { ChargingStation } from '@/types/chargingStation';
+import type { AddChargingStationBody, UpdatableChargingStation } from '@/types/chargingStation';
 import { createGeoPoint, type Address, type Coordinates } from '@/types/location';
 import { reactive, ref } from 'vue';
 import { useErrorHandler } from '@/api/errorHandling';
@@ -21,12 +21,12 @@ const showConfirmModal = ref<boolean>(false);
 
 const chargingStation = reactive<{
   id: string,
-  station: ChargingStation,
+  station: UpdatableChargingStation,
   address: Address
 }>({
   id: '',
-  station: { power: 0 },
-  address: { street: '', city: '' }
+  station: { power: 0, enabled: true, location: { type: 'Point', coordinates: [0, 0] } },
+  address: { street: '', city: '', country: '' }
 });
 
 const openModal = () => isModalVisible.value = true;
@@ -42,21 +42,22 @@ const searchClosestChargingStation = async (input: string) => {
     showChargingStationCard();
     chargingStation.id = res._id;
     const coords: Coordinates = {
-      longitude: res.location.coordinates[0],
-      latitude: res.location.coordinates[1]
+      lng: res.location.coordinates[0],
+      lat: res.location.coordinates[1]
     };
     chargingStation.station = {
       power: res.power,
-      enabled: res.enabled ?? true,
+      enabled: res.enabled,
       location: {
         type: res.location.type,
-        coordinates: [coords.longitude, coords.latitude]
+        coordinates: [coords.lng, coords.lat]
       }
     };
     const address = (await reverseCoordinatesToAddressRequest(coords)).data.address;
     chargingStation.address = {
       street: address.street,
-      city: address.city
+      city: address.city,
+      country: address.country
     };
     showChargingStationCard();
   } catch {
@@ -68,9 +69,9 @@ const searchClosestChargingStation = async (input: string) => {
 const addChargingStation = async (power: number, address: string) => {
   try {
     const coordinates = (await resolveAddressToCoordinatesRequest(address)).data;
-    const chargingStationToAdd: ChargingStation = {
+    const chargingStationToAdd: AddChargingStationBody = {
       "power": power,
-      location: createGeoPoint({ latitude: coordinates.lat, longitude: coordinates.lng})
+      location: createGeoPoint(coordinates)
     }
     await addChargingStationRequest(chargingStationToAdd);
     closeModal();
@@ -113,10 +114,9 @@ const removeChargingStation = async () => {
         @update-charging-station="updateChargingStation"
       />
     </div>
-    <ChargingStationModal
+    <AddChargingStationModal
       v-if="isModalVisible"
       :show="isModalVisible"
-      :charging-station="chargingStation.station"
       :chargingStationAddress="chargingStation.address"
       @add-charging-station="addChargingStation"
       @close="closeModal"

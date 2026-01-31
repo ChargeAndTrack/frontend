@@ -1,28 +1,13 @@
 <script setup lang="ts">
-import { reverseCoordinatesToAddressRequest } from '@/api/location';
-import type { ChargingStation } from '@/types/chargingStation';
-import type { Address, Coordinates } from '@/types/location';
-import { onMounted, ref } from 'vue';
+import type { UpdatableChargingStation } from '@/types/chargingStation';
+import type { Address } from '@/types/location';
 
 const props = defineProps<{
   chargingStationId: string,
-  chargingStation: ChargingStation,
+  chargingStation: UpdatableChargingStation,
   chargingStationAddress: Address
 }>();
 const emit = defineEmits(['remove-charging-station', 'update-charging-station']);
-
-const address = ref<string>('');
-const coordinatesToAddress = async () => {
-  const coords: Coordinates = {
-    longitude: props.chargingStation.location!.coordinates[0],
-    latitude: props.chargingStation.location!.coordinates[1]
-  };
-  try {
-    address.value = (await reverseCoordinatesToAddressRequest(coords)).data;
-  } catch {}
-};
-
-onMounted(() => coordinatesToAddress);
 </script>
 
 <template>

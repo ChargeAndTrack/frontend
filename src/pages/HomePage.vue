@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SearchBar from '@/components/SearchBar.vue';
 import ChargingStationItem from '@/components/ChargingStationItem.vue';
-import type { ChargingStation } from '@/types/chargingStation';
+import type { UpdatableChargingStation } from '@/types/chargingStation';
 import { formatAddress, type Address } from '@/types/location';
 import { reactive, ref } from 'vue';
 import ListItemsCard from '@/components/ListItemsCard.vue';
@@ -17,10 +17,10 @@ const prompt = ref<string>('');
 const showChargingStationsList = ref<boolean>(false);
 const isChargingStationsListLoading = ref<boolean>(false);
 
-const carsCharging = ref<{ car: Car, chargingStation: ChargingStation, animation: boolean }[]>([]);
+const carsCharging = ref<{ car: Car, chargingStation: UpdatableChargingStation, animation: boolean }[]>([]);
 
 const chargingStations = reactive<{
-  station: ChargingStation,
+  station: UpdatableChargingStation,
   address: Address
 }[]>([]);
 
@@ -53,12 +53,17 @@ const stopRecharge = async (carId: string, chargingStationId: string) => {
 
 async function addChargingStationToList(chargingStation: any) {
   const addr = (await reverseCoordinatesToAddressRequest({
-    longitude: chargingStation.location.coordinates[0],
-    latitude: chargingStation.location.coordinates[1] }
+    lng: chargingStation.location.coordinates[0],
+    lat: chargingStation.location.coordinates[1] }
   )).data;
   chargingStations.push({
     station: { _id: chargingStation._id, power: chargingStation.power },
-    address: { street: addr.address.street, houseNumber: addr.address.houseNumber, city: addr.address.city }
+    address: {
+      street: addr.address.street,
+      houseNumber: addr.address.houseNumber,
+      city: addr.address.city,
+      country: addr.address.country
+    }
   });
 }
 
@@ -80,7 +85,7 @@ const llmSearch = async (promptText: string) => {
 
 <template>
   <div class="container-fluid justify-content-center">
-    <SearchBar v-model:search-text="prompt" @search="llmSearch">
+    <SearchBar class="row py-4 px-2 sticky-top" v-model:search-text="prompt" @search="llmSearch">
       <template #text-input>
         <label for="llm-search-textarea" hidden>Ask to an LLM to find charging stations</label>
         <textarea
@@ -94,7 +99,7 @@ const llmSearch = async (promptText: string) => {
 
     <LoadingSpinner v-if="isChargingStationsListLoading" />
 
-    <ListItemsCard v-if="showChargingStationsList" class="pb-5">
+    <ListItemsCard v-if="showChargingStationsList" class="pb-5 mt-3">
       <template #card-header>
         <div class="d-flex justify-content-between align-items-center pb-2">
           <h5 class="card-title">Charging stations</h5>

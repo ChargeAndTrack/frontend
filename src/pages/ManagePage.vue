@@ -110,7 +110,7 @@ const removeChargingStation = async () => {
         >
       </template>
     </SearchBar>
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mt-3">
       <LoadingSpinner v-if="isLoading" />
       <ChargingStationCardExpanded
         v-else-if="showChargingStation"

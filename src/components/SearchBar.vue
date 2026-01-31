@@ -13,7 +13,7 @@ const search = () => emit('search', textInput.value);
 
 <template>
   <div>
-    <div class="input-group mb-3">
+    <div class="input-group">
       <slot name="text-input"></slot>
       <button type="button" class="btn btn-light border" @click.prevent="search">
         <i class="bi bi-search"></i>

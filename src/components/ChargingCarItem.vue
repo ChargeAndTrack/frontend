@@ -2,11 +2,11 @@
 import type { Car } from '@/types/car';
 import ShowFieldsCard from './ShowFieldsCard.vue';
 import { onMounted, ref } from 'vue';
-import type { ChargingStation } from '@/types/chargingStation';
+import type { UpdatableChargingStation } from '@/types/chargingStation';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import { formatAddress } from '@/types/location';
 
-const props = defineProps<{ car: Car, chargingStation: ChargingStation, animation: boolean }>();
+const props = defineProps<{ car: Car, chargingStation: UpdatableChargingStation, animation: boolean }>();
 const emit = defineEmits<{
   (e: 'stop-recharge', carId: string, chargingStationId: string): void
 }>();
@@ -18,10 +18,10 @@ const stopRecharge = () => emit('stop-recharge', props.car._id, props.chargingSt
 onMounted(async () => {
   try {
     const address = await reverseCoordinatesToAddressRequest({
-      longitude: props.chargingStation.location?.coordinates[0]!,
-      latitude: props.chargingStation.location?.coordinates[1]!
+      lng: props.chargingStation.location?.coordinates[0]!,
+      lat: props.chargingStation.location?.coordinates[1]!
     });
-    chargingStationAddress.value = formatAddress(address.data);
+    chargingStationAddress.value = formatAddress(address.data.address);
   } catch {}
 });
 </script>

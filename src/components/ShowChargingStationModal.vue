@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import FormField from '@/components/FormField.vue';
 import type { Car } from '@/types/car';
-import type { ShowableChargingStation } from '@/types/chargingStation';
+import type { ChargingStationWithAddress } from '@/types/chargingStation';
 import type { Address } from '@/types/location';
 import { ref } from 'vue';
 
 const props = defineProps<{
-  chargingStation: ShowableChargingStation,
+  chargingStation: ChargingStationWithAddress,
   cars: Car[]
 }>();
 const emit = defineEmits<{
@@ -14,10 +14,10 @@ const emit = defineEmits<{
   (e: 'plug-in', carPlate: string): void
 }>();
 
-const selectedCarPlate = ref<string>('');
+const selectedCarId = ref<string>('');
 
 const onCancel = () => emit('cancel');
-const onPlugIn = () => emit('plug-in', selectedCarPlate.value);
+const onPlugIn = () => emit('plug-in', selectedCarId.value);
 
 const formatAddress = (address: Address): string => {
   return `${address.street}, ${address.houseNumber ? address.houseNumber + ', ' : ''}${address.city}`;
@@ -30,7 +30,12 @@ const formatAddress = (address: Address): string => {
       <div class="modal-content">
 
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Charging Station</h1>
+          <h1 class="modal-title fs-5">
+            Charging Station -
+            <span :class="chargingStation.available ? 'text-success' : 'text-danger'">
+              {{ chargingStation.available ? 'Available' : 'Not Available' }}
+            </span>
+          </h1>
           <button type="button" class="btn-close" @click="onCancel"></button>
         </div>
 
@@ -53,19 +58,19 @@ const formatAddress = (address: Address): string => {
           </FormField>
         </div>
 
-        <div class="modal-footer d-flex flex-column justify-content-center">
+        <div v-if="chargingStation.available" class="modal-footer d-flex flex-column justify-content-center">
           <label class="form-label" for="select-car">Select the car you want to plug in</label>
           <span v-if="props.cars.length === 0" class="alert alert-warning p-2">No cars available.</span>
-          <select v-else id="select-car" class="form-select" v-model="selectedCarPlate">
+          <select v-else id="select-car" class="form-select" v-model="selectedCarId">
             <option
               v-for="car in props.cars"
-              :key="car.plate"
-              :value="car.plate"
+              :key="car._id"
+              :value="car._id"
             >
               {{ car.plate }} - {{ car.maxBattery }} kW
             </option>
           </select>
-          <button type="button" class="btn btn-primary mt-3" @click="onPlugIn" :disabled="!selectedCarPlate">
+          <button type="button" class="btn btn-primary mt-3" @click="onPlugIn" :disabled="!selectedCarId">
             <div class="d-flex align-items-center">
               <i class="bi bi-plug fs-4 me-2"></i>
               <span class="fs-5 me-1">Plug in</span>

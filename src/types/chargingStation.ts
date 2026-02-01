@@ -21,8 +21,6 @@ export interface UpdatableChargingStation {
     location?: GeoPoint
 }
 
-export interface ShowableChargingStation {
-    power: number,
-    available: boolean,
+export interface ChargingStationWithAddress extends ChargingStation {
     address: Address
 }

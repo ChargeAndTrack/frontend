@@ -5,6 +5,10 @@ import type { AxiosResponse } from "axios";
 const CARS_ENDPOINT = "/cars";
 const carEndpoint = (carId: string) => `${CARS_ENDPOINT}/${carId}`;
 
+export const getCarsRequest = async (): Promise<AxiosResponse<Car[]>> => {
+    return await api.get<Car[]>(CARS_ENDPOINT);
+}
+
 export const addCarRequest = async (car: CarBody): Promise<AxiosResponse<Car>> => {
     return await api.post<Car>(CARS_ENDPOINT, car);
 }

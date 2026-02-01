@@ -23,16 +23,24 @@ export const getNearbyChargingStationsRequest = async (coordinates: Coordinates)
     );
 };
 
-export const getClosestChargingStationRequest = async (address: string): Promise<AxiosResponse<ChargingStation>> => {
-    const location = (await resolveAddressToCoordinatesRequest(address)).data;
-    console.log("Location: " + JSON.stringify(location));
+export async function getClosestChargingStationRequest(coordinates: Coordinates)
+        : Promise<AxiosResponse<ChargingStation>>;
+export async function getClosestChargingStationRequest(address: string)
+        : Promise<AxiosResponse<ChargingStation>>;
+export async function getClosestChargingStationRequest(value: Coordinates | string)
+        : Promise<AxiosResponse<ChargingStation>> {
+    if (typeof value === "string") {
+        const location = (await resolveAddressToCoordinatesRequest(value)).data;
+        console.log("Location: " + JSON.stringify(location));
+        value = location;
+    }
     return await api.get<ChargingStation>(
         `${CHARGING_STATION_URL}/closest`,
         {
             params: {
-                lat: location.lat,
-                lng: location.lng,
-                onlyEnabledAndAvailable: false
+                lng: value.lng,
+                lat: value.lat,
+                onlyEnabledAndAvailable: useAuthenticationStore().isAdmin() ? false : true
             }
         }
     );

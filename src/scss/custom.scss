@@ -50,6 +50,7 @@ $border-teal: #{rgba($teal-800, 1)};
     --bs-btn-active-border-color: $border-teal;
     --bs-btn-focus-border-color: $border-teal;
     --bs-btn-focus-shadow-rgb: 19, 121, 91;
+    --bs-btn-disabled-bg: #{rgba($teal-700, .7)};
   }
 
   .card-header {

@@ -11,6 +11,10 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { getCarsRequest } from '@/api/cars';
 import type { Car } from '@/types/car';
 import type { AxiosResponse } from 'axios';
+import { getSocket } from '@/services/socket';
+import { useErrorHandler } from '@/api/errorHandling';
+
+const { showSuccess } = useErrorHandler();
 
 const currentCoordinates = ref<Coordinates>({ lng: 0, lat: 25 });
 const showFindClosestButton = ref(false);
@@ -20,6 +24,7 @@ let markersLayer: L.LayerGroup = L.layerGroup();
 let markers: Map<string, L.Marker> = new Map();
 
 onMounted(() => {
+  getSocket().on('charging-station-updated', updateChargingStation);
   map = L.map('map', { zoomControl: false })
     .setView([currentCoordinates.value.lat, currentCoordinates.value.lng], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -31,24 +36,30 @@ onMounted(() => {
 });
 onBeforeUnmount(() => map.remove());
 
+const updateChargingStation = async (payload: { id: string }) => {
+  console.log("Update charging station ", payload.id);
+  const updatedChargingStation: ChargingStation = (await getChargingStationRequest(payload.id)).data;
+  const marker = markers.get(updatedChargingStation._id);
+  if (!marker) {
+    throw new Error('Marker not found');
+  }
+  setMarker(markers.get(updatedChargingStation._id)!, updatedChargingStation);
+};
+
 const onSearchClosestChargingStation = async () => {
-  console.log('Searching closest charging station');
   try {
     const closestChargingStation: ChargingStation = (await getClosestChargingStationRequest(currentCoordinates.value)).data;
-    console.log('Closest charging station: ', JSON.stringify(closestChargingStation));
     addMarkers([closestChargingStation]);
     showFindClosestButton.value = false;
   } catch {}
 };
 
 const onSearchNearbyChargingStations = async (input: string) => {
-  console.log('Searching nearby charging stations for: ', input);
   try {
     const coordinates: Coordinates = (await resolveAddressToCoordinatesRequest(input)).data;
     currentCoordinates.value = coordinates;
     showFindClosestButton.value = true;
     const chargingStations: ChargingStation[] = (await getNearbyChargingStationsRequest(coordinates)).data;
-    console.log('Nearby charging stations: ', JSON.stringify(chargingStations));
     centerViewAt(coordinates.lng, coordinates.lat);
     addMarkers(chargingStations);
   } catch {}
@@ -59,6 +70,7 @@ const centerViewAt = async (longitude: number, latitude: number): Promise<void> 
 };
 
 const addMarkers = (chargingStations: ChargingStation[]): void => {
+  getSocket().emit('leave-charging-stations', Array.from(markers.keys()));
   markersLayer.clearLayers();
   markers.clear();
   chargingStations.forEach(chargingStation => {
@@ -67,18 +79,21 @@ const addMarkers = (chargingStations: ChargingStation[]): void => {
       lat: chargingStation.location.coordinates[1]
     };
     const marker = setMarker(L.marker([coordinates.lat, coordinates.lng]), chargingStation)
-      .on('click', () => {
-        console.log('Marker clicked');
-        document.getElementById(`viewButton${chargingStation._id}`)?.addEventListener('click', async () => {
-          await onViewChargingStation(chargingStation, coordinates);
-        });
-      })
       .addTo(markersLayer);
     markers.set(chargingStation._id, marker);
   });
+  getSocket().emit('join-charging-stations', Array.from(markers.keys()));
 };
 
 const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker => {
+  const coordinates: Coordinates = {
+    lng: chargingStation.location.coordinates[0],
+    lat: chargingStation.location.coordinates[1]
+  };
+  const openPopup = marker.isPopupOpen();
+  if (marker.isPopupOpen()) {
+    marker.closePopup();
+  }
   const color: string = chargingStation.available ? 'text-success' : 'text-danger';
   const icon: L.DivIcon = L.divIcon({
     html: `<i class="bi bi-geo-alt-fill ${color} fs-2"></i>`,
@@ -94,7 +109,18 @@ const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker
     <div class="d-flex justify-content-center mt-1">
       <button type="button" id="viewButton${chargingStation._id}" class="border px-2">View</button>
     </div>`;
-  return marker.setIcon(icon).bindPopup(popupContent);
+  const popupListener = async () => {
+    const button = document.getElementById(`viewButton${chargingStation._id}`);
+    if (!button) {
+      throw new Error('View button not found in charging station ' + chargingStation._id + ' popup');
+    }
+    button.onclick = async () => await onViewChargingStation(chargingStation, coordinates);
+  };
+  const updatedMarker = marker.setIcon(icon).bindPopup(popupContent).on('popupopen', popupListener);
+  if (openPopup) {
+    updatedMarker.openPopup();
+  }
+  return updatedMarker;
 };
 
 const showChargingStationModal = ref(false);
@@ -109,7 +135,6 @@ const chargingStationToView = ref<ChargingStationWithAddress>({
 const cars = ref<Car[]>([]);
 
 const onViewChargingStation = async (chargingStation: ChargingStation, coordinates: Coordinates) => {
-  console.log('Viewing details');
   try {
     const address: Address = (await reverseCoordinatesToAddressRequest(coordinates)).data.address;
     chargingStationToView.value = {
@@ -123,15 +148,11 @@ const onViewChargingStation = async (chargingStation: ChargingStation, coordinat
 };
 
 const onPlugInCar = async (selectedCarId: string) => {
-  console.log('Plugging in car ', selectedCarId);
-  await startRechargeRequest(chargingStationToView.value._id, selectedCarId);
-
-  // TODO update on push notification (other charging stations could have been updated as well)
-  const updatedChargingStation: ChargingStation =
-    (await getChargingStationRequest(chargingStationToView.value._id)).data;
-  setMarker(markers.get(updatedChargingStation._id)!, updatedChargingStation);
-
-  showChargingStationModal.value = false;
+  try {
+    await startRechargeRequest(chargingStationToView.value._id, selectedCarId);
+    showChargingStationModal.value = false;
+    showSuccess('Car plugged in successfully');
+  } catch {}
 };
 </script>
 

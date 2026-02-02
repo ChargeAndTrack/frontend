@@ -6,7 +6,7 @@ import ChargingStationModal from '@/components/ChargingStationModal.vue';
 import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import type { ChargingStation } from '@/types/chargingStation';
+import type { ChargingStation, ChargingStationBody } from '@/types/chargingStation';
 import { createGeoPoint, type Address, type Coordinates } from '@/types/location';
 import { reactive, ref } from 'vue';
 import { useErrorHandler } from '@/api/errorHandling';
@@ -21,12 +21,10 @@ const isLoading = ref<boolean>(false);
 const showConfirmModal = ref<boolean>(false);
 
 const chargingStation = reactive<{
-  id: string,
   station: ChargingStation,
   address: Address
 }>({
-  id: '',
-  station: { power: 0 },
+  station: { _id: '', power: 0 },
   address: { street: '', city: '' }
 });
 
@@ -41,12 +39,12 @@ const searchClosestChargingStation = async (input: string) => {
   try {
     const res = (await getClosestChargingStationRequest(input)).data;
     showChargingStationCard();
-    chargingStation.id = res._id;
     const coords: Coordinates = {
       longitude: res.location.coordinates[0],
       latitude: res.location.coordinates[1]
     };
     chargingStation.station = {
+      _id: res._id,
       power: res.power,
       enabled: res.enabled ?? true,
       location: {
@@ -69,7 +67,7 @@ const searchClosestChargingStation = async (input: string) => {
 const addChargingStation = async (power: number, address: string) => {
   try {
     const coordinates = (await resolveAddressToCoordinatesRequest(address)).data;
-    const chargingStationToAdd: ChargingStation = {
+    const chargingStationToAdd: ChargingStationBody = {
       "power": power,
       location: createGeoPoint({ latitude: coordinates.lat, longitude: coordinates.lng})
     }
@@ -81,14 +79,14 @@ const addChargingStation = async (power: number, address: string) => {
 
 const updateChargingStation = async () => {
   try {
-    await updateChargingStationRequest(chargingStation.id, chargingStation.station);
+    await updateChargingStationRequest(chargingStation.station);
     showSuccess("Update the charging station successfully");
   } catch {}
 };
 
 const removeChargingStation = async () => {
   try {
-    await removeChargingStationRequest(chargingStation.id);
+    await removeChargingStationRequest(chargingStation.station._id);
     showSuccess("Removed successfully the charging station!");
     hideChargingStationCard();
     showConfirmModal.value = false;
@@ -114,7 +112,6 @@ const removeChargingStation = async () => {
       <LoadingSpinner v-if="isLoading" />
       <ChargingStationCardExpanded
         v-else-if="showChargingStation"
-        :charging-station-id="chargingStation.id"
         :chargingStation="chargingStation.station"
         :chargingStationAddress="chargingStation.address"
         @remove-charging-station="showConfirmModal = true"

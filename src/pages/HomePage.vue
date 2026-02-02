@@ -10,28 +10,16 @@ import ChargingCarItem from '@/components/ChargingCarItem.vue';
 import { llmSearchRequest } from '@/api/llm';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
+import { stopRechargeRequest } from '@/api/chargingStations';
+import { socket } from '@/api/socket';
 
 const prompt = ref<string>('');
 const showChargingStationsList = ref<boolean>(false);
 const isChargingStationsListLoading = ref<boolean>(false);
 
-const cars = ref<Car[]>([
-  {
-    _id: "c1",
-    plate: "AB123CD",
-    maxBattery: 800,
-    currentBattery: 55
-  },
-  {
-    _id: "c2",
-    plate: "FE456GH",
-    maxBattery: 500,
-    currentBattery: 78
-  }
-]);
+const carsCharging = ref<{ car: Car, chargingStation: ChargingStation }[]>([]);
 
 const chargingStations = reactive<{
-  id: string,
   station: ChargingStation,
   address: Address
 }[]>([]);
@@ -41,14 +29,33 @@ const clearChargingStationsList = async () => {
   while (chargingStations.pop() !== undefined);
 }
 
+const rechargeUpdateCallback = (data: any) => {
+  const carToUpdate: Car | undefined = carsCharging.value.find(c => c.car._id === data.id)?.car;
+  if (carToUpdate !== undefined) {
+    carToUpdate.currentBattery = data.level;
+  }
+};
+
+socket.on('recharge-update', rechargeUpdateCallback);
+
+const stopRecharge = async (carId: string, chargingStationId: string) => {
+  try {
+    await stopRechargeRequest(chargingStationId, carId);
+    socket.emit('stop-recharge', carId);
+    const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
+    if (itemIndex !== -1) {
+      carsCharging.value.splice(itemIndex, 1);
+    }
+  } catch {}
+}
+
 async function addChargingStationToList(chargingStation: any) {
   const addr = (await reverseCoordinatesToAddressRequest({
     longitude: chargingStation.location.coordinates[0],
     latitude: chargingStation.location.coordinates[1] }
   )).data;
   chargingStations.push({
-    id: chargingStation._id,
-    station: { power: chargingStation.power },
+    station: { _id: chargingStation._id, power: chargingStation.power },
     address: { street: addr.address.street, city: addr.address.city }
   });
 }
@@ -97,7 +104,7 @@ const llmSearch = async (promptText: string) => {
       <template #card-body>
         <ChargingStationItem
           v-for="chargingStation in chargingStations"
-          :key="chargingStation.id"
+          :key="chargingStation.station._id"
           :charging-station="chargingStation.station"
           :charging-station-address="chargingStation.address"
         />
@@ -107,9 +114,11 @@ const llmSearch = async (promptText: string) => {
     <div class="container-fluid pb-2 pt-5">
       <div class="row row-cols-1 row-cols-md-2 justify-content-center mb-5">
         <ChargingCarItem
-          v-for="car in cars"
-          :key="car.plate"
-          :car="car"
+          v-for="car in carsCharging"
+          :key="car.car.plate"
+          :car="car.car"
+          :charging-station="car.chargingStation"
+          @stop-recharge="stopRecharge"
           class="col-10 col-md-5 m-2"
         />
       </div>

@@ -5,7 +5,7 @@ import { onMounted, ref } from 'vue';
 import type { ChargingStation } from '@/types/chargingStation';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 
-const props = defineProps<{ car: Car, chargingStation: ChargingStation }>();
+const props = defineProps<{ car: Car, chargingStation: ChargingStation, animation: boolean }>();
 const emit = defineEmits<{
   (e: 'stop-recharge', carId: string, chargingStationId: string): void
 }>();
@@ -48,6 +48,7 @@ onMounted(async () => {
             type="number"
             id="current-battery"
             class="form-control"
+            :class="{ 'animate-fill' : animation }"
             aria-describedby="Car current battery"
             v-model.number="props.car.currentBattery"
             readonly

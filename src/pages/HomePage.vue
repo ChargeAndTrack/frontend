@@ -17,7 +17,7 @@ const prompt = ref<string>('');
 const showChargingStationsList = ref<boolean>(false);
 const isChargingStationsListLoading = ref<boolean>(false);
 
-const carsCharging = ref<{ car: Car, chargingStation: ChargingStation }[]>([]);
+const carsCharging = ref<{ car: Car, chargingStation: ChargingStation, animation: boolean }[]>([]);
 
 const chargingStations = reactive<{
   station: ChargingStation,
@@ -30,9 +30,11 @@ const clearChargingStationsList = async () => {
 }
 
 const rechargeUpdateCallback = (data: any) => {
-  const carToUpdate: Car | undefined = carsCharging.value.find(c => c.car._id === data.id)?.car;
-  if (carToUpdate !== undefined) {
-    carToUpdate.currentBattery = data.level;
+  const itemToUpdate = carsCharging.value.find(c => c.car._id === data.id);
+  if (itemToUpdate?.car !== undefined) {
+    itemToUpdate.car.currentBattery = data.level;
+    itemToUpdate.animation = true;
+    setTimeout(() => (itemToUpdate.animation = false), 2000);
   }
 };
 
@@ -118,6 +120,7 @@ const llmSearch = async (promptText: string) => {
           :key="car.car.plate"
           :car="car.car"
           :charging-station="car.chargingStation"
+          :animation="car.animation"
           @stop-recharge="stopRecharge"
           class="col-10 col-md-5 m-2"
         />

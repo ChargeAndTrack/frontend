@@ -6,9 +6,11 @@ import NavBarBottom from './components/NavBarBottom.vue';
 import { useAuthenticationStore } from './store/authentication.store';
 import { useErrorHandler } from './api/errorHandling';
 import MessageToast from './components/MessageToast.vue';
+import { useChargingStore } from './store/charging.store';
 
 const route = useRoute();
 const authenticationStore = useAuthenticationStore();
+const chargingStore = useChargingStore();
 
 const { message } = useErrorHandler();
 
@@ -16,7 +18,10 @@ const showNavbar = computed(() => {
   return route.name !== 'Login';
 });
 
-onMounted(() => authenticationStore.restoreSession());
+onMounted(() => {
+  authenticationStore.restoreSession();
+  chargingStore.restoreSession();
+});
 </script>
 
 <template>

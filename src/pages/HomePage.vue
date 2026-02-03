@@ -3,15 +3,21 @@ import SearchBar from '@/components/SearchBar.vue';
 import ChargingStationItem from '@/components/ChargingStationItem.vue';
 import type { ChargingStation, UpdatableChargingStation } from '@/types/chargingStation';
 import { formatAddress, type Address } from '@/types/location';
-import { reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import ListItemsCard from '@/components/ListItemsCard.vue';
 import type { Car } from '@/types/car';
 import ChargingCarItem from '@/components/ChargingCarItem.vue';
 import { llmSearchRequest } from '@/api/llm';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
-import { stopRechargeRequest } from '@/api/chargingStations';
+import { getChargingStationRequest, stopRechargeRequest } from '@/api/chargingStations';
 import { getSocket } from '@/services/socket';
+import { getCarRequest } from '@/api/cars';
+import { useChargingStore } from '@/store/charging.store';
+import { useErrorHandler } from '@/api/errorHandling';
+
+const chargingStore = useChargingStore();
+const { showSuccess } = useErrorHandler();
 
 const prompt = ref<string>('');
 const showChargingStationsList = ref<boolean>(false);
@@ -29,25 +35,50 @@ const clearChargingStationsList = async () => {
   while (chargingStations.pop() !== undefined);
 }
 
+const addChargingCar = async (carId: string, chargingStationId: string) => {
+  try {
+    const car: Car = (await getCarRequest(carId)).data;
+    const chargingStation: ChargingStation = (await getChargingStationRequest(chargingStationId)).data;
+    carsCharging.value.push({ "car": car, "chargingStation": chargingStation, "animation": false });
+  } catch {}
+};
+
 const rechargeUpdateCallback = (data: any) => {
   const itemToUpdate = carsCharging.value.find(c => c.car._id === data.id);
   if (itemToUpdate?.car !== undefined) {
     itemToUpdate.car.currentBattery = data.level;
     itemToUpdate.animation = true;
     setTimeout(() => (itemToUpdate.animation = false), 2000);
+    if (data.level >= 100) {
+      removeChargingCar(itemToUpdate.car._id, itemToUpdate.chargingStation._id);
+      showSuccess(`Car ${itemToUpdate.car.plate} completed the recharge.`);
+    }
   }
 };
 
-getSocket().on('recharge-update', rechargeUpdateCallback);
+onMounted(() => {
+  getSocket().on('recharge-update', rechargeUpdateCallback);
+  chargingStore.inCharge.forEach((item) => {
+    addChargingCar(item.carId, item.chargingStationId);
+  });
+});
+onBeforeUnmount(() => {
+  getSocket().off('recharge-update', rechargeUpdateCallback);
+});
+
+const removeChargingCar = (carId: string, chargingStationId: string) => {
+  getSocket().emit('stop-recharge', carId);
+  const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
+  if (itemIndex !== -1) {
+    carsCharging.value.splice(itemIndex, 1);
+  }
+  chargingStore.remove(carId, chargingStationId);
+}
 
 const stopRecharge = async (carId: string, chargingStationId: string) => {
   try {
     await stopRechargeRequest(chargingStationId, carId);
-    getSocket().emit('stop-recharge', carId);
-    const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
-    if (itemIndex !== -1) {
-      carsCharging.value.splice(itemIndex, 1);
-    }
+    removeChargingCar(carId, chargingStationId);
   } catch {}
 }
 
@@ -85,7 +116,7 @@ const llmSearch = async () => {
 
 <template>
   <div class="container-fluid justify-content-center">
-    <SearchBar class="row py-4 px-2 sticky-top" @search="llmSearch">
+    <SearchBar class="row py-4 px-2" @search="llmSearch">
       <template #text-input>
         <label for="llm-search-textarea" hidden>Ask to an LLM to find charging stations</label>
         <textarea

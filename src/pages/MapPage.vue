@@ -12,8 +12,10 @@ import { getCarsRequest } from '@/api/cars';
 import type { Car } from '@/types/car';
 import { getSocket } from '@/services/socket';
 import { useErrorHandler } from '@/api/errorHandling';
+import { useChargingStore } from '@/store/charging.store';
 
 const { showSuccess } = useErrorHandler();
+const chargingStore = useChargingStore();
 
 const searchText = ref<string>('');
 const currentCoordinates = ref<Coordinates>({ lng: 0, lat: 25 });
@@ -34,7 +36,10 @@ onMounted(() => {
   }).addTo(map);
   markersLayer.addTo(map);
 });
-onBeforeUnmount(() => map.remove());
+onBeforeUnmount(() => {
+  map.remove();
+  getSocket().off('charging-station-updated', onUpdateChargingStation);
+});
 
 const onUpdateChargingStation = async (payload: { id: string }) => {
   console.log("Update charging station ", payload.id);
@@ -173,6 +178,8 @@ const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlat
 const onPlugInCar = async (selectedCarId: string) => {
   try {
     await startRechargeRequest(chargingStationToView.value._id, selectedCarId);
+    getSocket().emit('start-recharge', selectedCarId, chargingStationToView.value._id);
+    chargingStore.add(selectedCarId, chargingStationToView.value._id);
     showChargingStationModal.value = false;
     showSuccess('Car plugged in successfully');
   } catch {}

@@ -1,14 +1,6 @@
 <script setup lang="ts">
-
-const textInput = defineModel<string>('search-text', { default: '' });
-const props = defineProps<{
-  placeholder?: string
-}>();
-const emit = defineEmits<{
-  search: [input: string]
-}>();
-
-const search = () => emit('search', textInput.value);
+const emit = defineEmits(['search']);
+const search = () => emit('search');
 </script>
 
 <template>

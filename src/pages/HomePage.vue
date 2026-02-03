@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SearchBar from '@/components/SearchBar.vue';
 import ChargingStationItem from '@/components/ChargingStationItem.vue';
-import type { UpdatableChargingStation } from '@/types/chargingStation';
+import type { ChargingStation, UpdatableChargingStation } from '@/types/chargingStation';
 import { formatAddress, type Address } from '@/types/location';
 import { reactive, ref } from 'vue';
 import ListItemsCard from '@/components/ListItemsCard.vue';
@@ -11,13 +11,13 @@ import { llmSearchRequest } from '@/api/llm';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import { stopRechargeRequest } from '@/api/chargingStations';
-import { socket } from '@/api/socket';
+import { getSocket } from '@/services/socket';
 
 const prompt = ref<string>('');
 const showChargingStationsList = ref<boolean>(false);
 const isChargingStationsListLoading = ref<boolean>(false);
 
-const carsCharging = ref<{ car: Car, chargingStation: UpdatableChargingStation, animation: boolean }[]>([]);
+const carsCharging = ref<{ car: Car, chargingStation: ChargingStation, animation: boolean }[]>([]);
 
 const chargingStations = reactive<{
   station: UpdatableChargingStation,
@@ -38,12 +38,12 @@ const rechargeUpdateCallback = (data: any) => {
   }
 };
 
-socket.on('recharge-update', rechargeUpdateCallback);
+getSocket().on('recharge-update', rechargeUpdateCallback);
 
 const stopRecharge = async (carId: string, chargingStationId: string) => {
   try {
     await stopRechargeRequest(chargingStationId, carId);
-    socket.emit('stop-recharge', carId);
+    getSocket().emit('stop-recharge', carId);
     const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
     if (itemIndex !== -1) {
       carsCharging.value.splice(itemIndex, 1);
@@ -67,11 +67,11 @@ async function addChargingStationToList(chargingStation: any) {
   });
 }
 
-const llmSearch = async (promptText: string) => {
+const llmSearch = async () => {
   try {
     await clearChargingStationsList();
     isChargingStationsListLoading.value = true;
-    const response = (await llmSearchRequest(promptText)).data;
+    const response = (await llmSearchRequest(prompt.value)).data;
     (response instanceof Array)
       ? response.forEach(async (cs) => await addChargingStationToList(cs))
       : await addChargingStationToList(response);
@@ -85,7 +85,7 @@ const llmSearch = async (promptText: string) => {
 
 <template>
   <div class="container-fluid justify-content-center">
-    <SearchBar class="row py-4 px-2 sticky-top" v-model:search-text="prompt" @search="llmSearch">
+    <SearchBar class="row py-4 px-2 sticky-top" @search="llmSearch">
       <template #text-input>
         <label for="llm-search-textarea" hidden>Ask to an LLM to find charging stations</label>
         <textarea

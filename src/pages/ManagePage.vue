@@ -33,11 +33,11 @@ const closeModal = () => isModalVisible.value = false;
 const showChargingStationCard = () => showChargingStation.value = true;
 const hideChargingStationCard = () => showChargingStation.value = false;
 
-const searchClosestChargingStation = async (input: string) => {
+const searchClosestChargingStation = async () => {
   isLoading.value = true;
   hideChargingStationCard()
   try {
-    const res = (await getClosestChargingStationRequest(input)).data;
+    const res = (await getClosestChargingStationRequest(searchText.value)).data;
     showChargingStationCard();
     const coords: Coordinates = {
       lng: res.location.coordinates[0],
@@ -98,7 +98,7 @@ const removeChargingStation = async () => {
 
 <template>
   <div class="container-fluid justify-content-center overflow-y-hidden">
-    <SearchBar class="row py-4 px-2 sticky-top" v-model:search-text="searchText" @search="searchClosestChargingStation">
+    <SearchBar class="row py-4 px-2 sticky-top" @search="searchClosestChargingStation">
       <template #text-input>
         <input
           type="text"

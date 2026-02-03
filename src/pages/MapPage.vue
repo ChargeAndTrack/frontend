@@ -15,6 +15,7 @@ import { useErrorHandler } from '@/api/errorHandling';
 
 const { showSuccess } = useErrorHandler();
 
+const searchText = ref<string>('');
 const currentCoordinates = ref<Coordinates>({ lng: 0, lat: 25 });
 const showFindClosestButton = ref(false);
 
@@ -64,9 +65,9 @@ const onSearchClosestChargingStation = async () => {
   } catch {}
 };
 
-const onSearchNearbyChargingStations = async (input: string) => {
+const onSearchNearbyChargingStations = async () => {
   try {
-    const coordinates: Coordinates = (await resolveAddressToCoordinatesRequest(input)).data;
+    const coordinates: Coordinates = (await resolveAddressToCoordinatesRequest(searchText.value)).data;
     currentCoordinates.value = coordinates;
     showFindClosestButton.value = true;
     const chargingStations: ChargingStation[] = (await getNearbyChargingStationsRequest(coordinates)).data;
@@ -193,6 +194,7 @@ const onPlugInCar = async (selectedCarId: string) => {
               placeholder="Search for an address"        
               aria-label="Search for an address"
               id="searchbar-map"
+              v-model="searchText"
             >
           </template>
         </SearchBar>

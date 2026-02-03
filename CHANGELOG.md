@@ -1,3 +1,36 @@
+## [1.0.0](https://github.com/ChargeAndTrack/frontend/compare/0.7.0...1.0.0) (2026-02-03)
+
+### ⚠ BREAKING CHANGES
+
+* integration between HomePage and MapPage of recharge events, add charging store
+
+### Features
+
+* add readonly property to FormField component ([54a51d4](https://github.com/ChargeAndTrack/frontend/commit/54a51d4d3fb66cda74158385fde663f151cc1a95))
+* adjust some interfaces and create new ones; add getNearbyChargingStationsRequest ([531521c](https://github.com/ChargeAndTrack/frontend/commit/531521c0d35ebc13f69c69f66b4dd11825740431))
+* integration between HomePage and MapPage of recharge events, add charging store ([b1640e1](https://github.com/ChargeAndTrack/frontend/commit/b1640e11af638305d30c09c426ff03b9dcfb5527))
+* **map:** add 'charging car' view and fix marker popups ([d6914b6](https://github.com/ChargeAndTrack/frontend/commit/d6914b67a9a5917c4bc4bfc8819279376445d4d8))
+* **map:** add 'find closest' functionality and car selection for plugging in ([8f81f04](https://github.com/ChargeAndTrack/frontend/commit/8f81f04b3777aa9b26f4ec242dd1a54ca7316fff))
+* **map:** add getCarsRequest and overload getClosestChargingStationRequest to accept coordinates ([edf264c](https://github.com/ChargeAndTrack/frontend/commit/edf264cbd04a6e07b689be82e9fd9331c9193d3e))
+* **map:** add onPlugInCar logic, extract setMarker logic into a separate function, and change icon color and modal view based on the charging station's availability ([ae965a9](https://github.com/ChargeAndTrack/frontend/commit/ae965a9caae4da8c670b8046a99b2dd2155d847b))
+* **map:** add search functionality and show markers on the map; add interaction with markers and add ShowChargingStationModal component ([8770954](https://github.com/ChargeAndTrack/frontend/commit/8770954fef1f64af7b18a3246ecffada2915e5e0))
+* **map:** add socket and use it for charging station updates ([236a846](https://github.com/ChargeAndTrack/frontend/commit/236a846c5dbb009bf78da14d3d6e4e94dc0b94ad))
+* **map:** add startRechargeRequest ([6895498](https://github.com/ChargeAndTrack/frontend/commit/6895498cfa560cfe5154b4ffff14a5402c845f53))
+* **map:** first implementation of MapPage and add MapView component; adjust SearchBar and FloatingActionButton components for MapPage, so adjust ManagePage ([ef2e4f0](https://github.com/ChargeAndTrack/frontend/commit/ef2e4f0910756cbd792daff722208a2f3c83fcac))
+* split NavBar into NavBarTop and NavBarBottom components, adjust App to include navbars in the flow (not fixed), and make icons clickable links; adjust LoginPage and ProfilePage ([51be5e3](https://github.com/ChargeAndTrack/frontend/commit/51be5e3f3e616d9a1df9d5cc22b10447f031ee26))
+
+### Bug Fixes
+
+* remove textInput from SearchBar and add v-model in Map's SearchBar ([aefbe4a](https://github.com/ChargeAndTrack/frontend/commit/aefbe4a372f8ec4138d567c5491302d57cbe6019))
+
+### Build and continuous integration
+
+* **map:** add leaflet dependency ([250703c](https://github.com/ChargeAndTrack/frontend/commit/250703c4809ce72293640c19126f3c92994933c1))
+
+### Refactoring
+
+* add const for cars endpoint, simplify data retrieval from responses and rename ChargingStationModal as AddChargingStationModal ([8031cf4](https://github.com/ChargeAndTrack/frontend/commit/8031cf42a7c3ce71251a7d19cd91426e13ee84aa))
+
 ## [0.7.0](https://github.com/ChargeAndTrack/frontend/compare/0.6.0...0.7.0) (2026-02-03)
 
 ### Features

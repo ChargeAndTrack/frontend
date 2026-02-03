@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { ChargingStation } from '@/types/chargingStation';
-import type { Address } from '@/types/location';
 import ShowFieldsCard from './ShowFieldsCard.vue';
 
 const props = defineProps<{
   chargingStation: ChargingStation,
-  chargingStationAddress: Address
+  chargingStationAddress: string
 }>();
 const emit = defineEmits(['remove-charging-station', 'update-charging-station']);
-
 </script>
 
 <template>
@@ -17,9 +15,7 @@ const emit = defineEmits(['remove-charging-station', 'update-charging-station'])
       <template #card-header>Charging station</template>
       <template #card-body>
         <form @submit.prevent="$emit('update-charging-station')">
-          <h2 class="card-title">
-            {{ chargingStationAddress.street }}, {{ chargingStationAddress.city }}
-          </h2>
+          <h2 class="card-title">{{ props.chargingStationAddress }}</h2>
           <div class="row row-cols-auto g-4 align-items-center mb-3">
             <div class="col-auto">
               <label for="update-power" class="col-form-label">Power</label>

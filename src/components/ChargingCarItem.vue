@@ -4,6 +4,7 @@ import ShowFieldsCard from './ShowFieldsCard.vue';
 import { onMounted, ref } from 'vue';
 import type { ChargingStation } from '@/types/chargingStation';
 import { reverseCoordinatesToAddressRequest } from '@/api/location';
+import { formatAddress } from '@/types/location';
 
 const props = defineProps<{ car: Car, chargingStation: ChargingStation, animation: boolean }>();
 const emit = defineEmits<{
@@ -20,7 +21,7 @@ onMounted(async () => {
       longitude: props.chargingStation.location?.coordinates[0]!,
       latitude: props.chargingStation.location?.coordinates[1]!
     });
-    chargingStationAddress.value = `${address.data.address.street}, ${address.data.address.city}`;
+    chargingStationAddress.value = formatAddress(address.data);
   } catch {}
 });
 </script>

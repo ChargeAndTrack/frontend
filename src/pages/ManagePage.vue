@@ -7,7 +7,7 @@ import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import type { ChargingStation, ChargingStationBody } from '@/types/chargingStation';
-import { createGeoPoint, type Address, type Coordinates } from '@/types/location';
+import { createGeoPoint, formatAddress, type Address, type Coordinates } from '@/types/location';
 import { reactive, ref } from 'vue';
 import { useErrorHandler } from '@/api/errorHandling';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
@@ -55,6 +55,7 @@ const searchClosestChargingStation = async (input: string) => {
     const address = (await reverseCoordinatesToAddressRequest(coords)).data.address;
     chargingStation.address = {
       street: address.street,
+      houseNumber: address.houseNumber,
       city: address.city
     };
     showChargingStationCard();
@@ -113,7 +114,7 @@ const removeChargingStation = async () => {
       <ChargingStationCardExpanded
         v-else-if="showChargingStation"
         :chargingStation="chargingStation.station"
-        :chargingStationAddress="chargingStation.address"
+        :chargingStationAddress="formatAddress(chargingStation.address)"
         @remove-charging-station="showConfirmModal = true"
         @update-charging-station="updateChargingStation"
       />

@@ -2,7 +2,7 @@
 import SearchBar from '@/components/SearchBar.vue';
 import ChargingStationItem from '@/components/ChargingStationItem.vue';
 import type { ChargingStation } from '@/types/chargingStation';
-import type { Address } from '@/types/location';
+import { formatAddress, type Address } from '@/types/location';
 import { reactive, ref } from 'vue';
 import ListItemsCard from '@/components/ListItemsCard.vue';
 import type { Car } from '@/types/car';
@@ -58,7 +58,7 @@ async function addChargingStationToList(chargingStation: any) {
   )).data;
   chargingStations.push({
     station: { _id: chargingStation._id, power: chargingStation.power },
-    address: { street: addr.address.street, city: addr.address.city }
+    address: { street: addr.address.street, houseNumber: addr.address.houseNumber, city: addr.address.city }
   });
 }
 
@@ -108,7 +108,7 @@ const llmSearch = async (promptText: string) => {
           v-for="chargingStation in chargingStations"
           :key="chargingStation.station._id"
           :charging-station="chargingStation.station"
-          :charging-station-address="chargingStation.address"
+          :charging-station-address="formatAddress(chargingStation.address)"
         />
       </template>
     </ListItemsCard>

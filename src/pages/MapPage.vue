@@ -4,13 +4,12 @@ import { resolveAddressToCoordinatesRequest, reverseCoordinatesToAddressRequest 
 import ShowChargingStationModal from '@/components/ShowChargingStationModal.vue';
 import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import type { ChargingStation, ChargingStationWithAddress } from '@/types/chargingStation';
+import type { ChargingStation, ChargingStationWithCarPlate, ShowableChargingStation } from '@/types/chargingStation';
 import type { Address, Coordinates } from '@/types/location';
 import L from 'leaflet';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { getCarsRequest } from '@/api/cars';
 import type { Car } from '@/types/car';
-import type { AxiosResponse } from 'axios';
 import { getSocket } from '@/services/socket';
 import { useErrorHandler } from '@/api/errorHandling';
 
@@ -24,7 +23,7 @@ let markersLayer: L.LayerGroup = L.layerGroup();
 let markers: Map<string, L.Marker> = new Map();
 
 onMounted(() => {
-  getSocket().on('charging-station-updated', updateChargingStation);
+  getSocket().on('charging-station-updated', onUpdateChargingStation);
   map = L.map('map', { zoomControl: false })
     .setView([currentCoordinates.value.lat, currentCoordinates.value.lng], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -36,20 +35,31 @@ onMounted(() => {
 });
 onBeforeUnmount(() => map.remove());
 
-const updateChargingStation = async (payload: { id: string }) => {
+const onUpdateChargingStation = async (payload: { id: string }) => {
   console.log("Update charging station ", payload.id);
-  const updatedChargingStation: ChargingStation = (await getChargingStationRequest(payload.id)).data;
-  const marker = markers.get(updatedChargingStation._id);
-  if (!marker) {
-    throw new Error('Marker not found');
-  }
-  setMarker(markers.get(updatedChargingStation._id)!, updatedChargingStation);
+  try {
+    const updatedChargingStation: ChargingStation = (await getChargingStationRequest(payload.id)).data;
+    const marker = markers.get(updatedChargingStation._id);
+    if (!marker) {
+      throw new Error('Marker not found');
+    }
+    console.log("Updated charging station data: ", updatedChargingStation);
+    const cars = (await getCarsRequest()).data;
+    setMarker(marker, updateChargingStationWithCarPlate(updatedChargingStation, cars));
+  } catch {}
+};
+
+const updateChargingStationWithCarPlate = (chargingStation: ChargingStationWithCarPlate, cars: Car[])
+    : ChargingStationWithCarPlate => {
+  return { ...chargingStation, currentCarPlate:cars.find(car => car._id === chargingStation.currentCarId)?.plate };
 };
 
 const onSearchClosestChargingStation = async () => {
   try {
     const closestChargingStation: ChargingStation = (await getClosestChargingStationRequest(currentCoordinates.value)).data;
-    addMarkers([closestChargingStation]);
+    const cars = (await getCarsRequest()).data;
+    centerViewAt(currentCoordinates.value.lng, currentCoordinates.value.lat, true);
+    addMarkers([updateChargingStationWithCarPlate(closestChargingStation, cars)]);
     showFindClosestButton.value = false;
   } catch {}
 };
@@ -61,15 +71,21 @@ const onSearchNearbyChargingStations = async (input: string) => {
     showFindClosestButton.value = true;
     const chargingStations: ChargingStation[] = (await getNearbyChargingStationsRequest(coordinates)).data;
     centerViewAt(coordinates.lng, coordinates.lat);
-    addMarkers(chargingStations);
+    const cars = (await getCarsRequest()).data;
+    const updatedChargingStations: ChargingStationWithCarPlate[] = chargingStations.map(
+      chargingStation => updateChargingStationWithCarPlate(chargingStation, cars)
+    );
+    addMarkers(updatedChargingStations);
   } catch {}
 };
 
-const centerViewAt = async (longitude: number, latitude: number): Promise<void> => {
-  map.fitBounds(L.latLng([latitude, longitude]).toBounds(DEFAULT_RADIUS_IN_METERS));
+const centerViewAt = async (longitude: number, latitude: number, keepZoom?: boolean): Promise<void> => {
+  keepZoom
+    ? map.panTo(L.latLng(latitude, longitude))
+    : map.fitBounds(L.latLng(latitude, longitude).toBounds(DEFAULT_RADIUS_IN_METERS));
 };
 
-const addMarkers = (chargingStations: ChargingStation[]): void => {
+const addMarkers = (chargingStations: ChargingStationWithCarPlate[]): void => {
   getSocket().emit('leave-charging-stations', Array.from(markers.keys()));
   markersLayer.clearLayers();
   markers.clear();
@@ -85,7 +101,7 @@ const addMarkers = (chargingStations: ChargingStation[]): void => {
   getSocket().emit('join-charging-stations', Array.from(markers.keys()));
 };
 
-const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker => {
+const setMarker = (marker: L.Marker, chargingStation: ChargingStationWithCarPlate): L.Marker => {
   const coordinates: Coordinates = {
     lng: chargingStation.location.coordinates[0],
     lat: chargingStation.location.coordinates[1]
@@ -94,7 +110,8 @@ const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker
   if (marker.isPopupOpen()) {
     marker.closePopup();
   }
-  const color: string = chargingStation.available ? 'text-success' : 'text-danger';
+  const color: string = chargingStation.currentCarPlate ? 'text-yellow'
+    : chargingStation.available ? 'text-success' : 'text-danger';
   const icon: L.DivIcon = L.divIcon({
     html: `<i class="bi bi-geo-alt-fill ${color} fs-2"></i>`,
     className: '',
@@ -105,7 +122,10 @@ const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker
   const popupContent: string = `
     <strong>Charging Station</strong><br>
     Power: ${chargingStation.power} kW<br>
-    <span class="${color}">${chargingStation.available ? 'Available' : 'Not Available'}</span>
+    <span class="${color}">
+      ${chargingStation.currentCarPlate ? `Charging car ${chargingStation.currentCarPlate}`
+        : chargingStation.available ? 'Available' : 'Not Available'}
+    </span>
     <div class="d-flex justify-content-center mt-1">
       <button type="button" id="viewButton${chargingStation._id}" class="border px-2">View</button>
     </div>`;
@@ -124,7 +144,7 @@ const setMarker = (marker: L.Marker, chargingStation: ChargingStation): L.Marker
 };
 
 const showChargingStationModal = ref(false);
-const chargingStationToView = ref<ChargingStationWithAddress>({
+const chargingStationToView = ref<ShowableChargingStation>({
   _id: '',
   power: 0,
   available: true,
@@ -132,17 +152,19 @@ const chargingStationToView = ref<ChargingStationWithAddress>({
   location: { type: 'Point', coordinates: [0, 0] },
   address: { street: '', city: '', country: '' }
 });
-const cars = ref<Car[]>([]);
+const selectableCars = ref<Car[]>([]);
 
-const onViewChargingStation = async (chargingStation: ChargingStation, coordinates: Coordinates) => {
+const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlate, coordinates: Coordinates) => {
   try {
+    const cars: Car[] = (await getCarsRequest()).data;
+    const chargingCar: Car | undefined = cars.find(car => car._id === chargingStation.currentCarId);
     const address: Address = (await reverseCoordinatesToAddressRequest(coordinates)).data.address;
     chargingStationToView.value = {
       ...chargingStation,
-      "address": address
+      "address": address,
+      "currentCarPlate": chargingCar?.plate
     };
-    const response: AxiosResponse<Car[]> = await getCarsRequest();
-    cars.value = response.data;
+    selectableCars.value = cars.filter(car => !car.isCharging);
     showChargingStationModal.value = true;
   } catch {}
 };
@@ -184,7 +206,7 @@ const onPlugInCar = async (selectedCarId: string) => {
     <ShowChargingStationModal
       v-if="showChargingStationModal"
       :chargingStation="chargingStationToView"
-      :cars="cars"
+      :cars="selectableCars"
       @cancel="showChargingStationModal = false"
       @plug-in="onPlugInCar"
     />

@@ -6,6 +6,7 @@ export interface ChargingStation {
     available: boolean;
     enabled: boolean;
     location: GeoPoint;
+    currentCarId?: string;
 }
 
 export interface AddChargingStationBody {
@@ -21,6 +22,10 @@ export interface UpdatableChargingStation {
     location?: GeoPoint
 }
 
-export interface ChargingStationWithAddress extends ChargingStation {
-    address: Address
+export interface ChargingStationWithCarPlate extends ChargingStation {
+    currentCarPlate?: string;
+}
+
+export interface ShowableChargingStation extends ChargingStationWithCarPlate {
+    address: Address;
 }

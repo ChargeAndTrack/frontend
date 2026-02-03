@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import FormField from '@/components/FormField.vue';
 import type { Car } from '@/types/car';
-import type { ChargingStationWithAddress } from '@/types/chargingStation';
+import type { ShowableChargingStation } from '@/types/chargingStation';
 import type { Address } from '@/types/location';
 import { ref } from 'vue';
 
 const props = defineProps<{
-  chargingStation: ChargingStationWithAddress,
+  chargingStation: ShowableChargingStation,
   cars: Car[]
 }>();
 const emit = defineEmits<{
@@ -32,7 +32,10 @@ const formatAddress = (address: Address): string => {
         <div class="modal-header">
           <h1 class="modal-title fs-5">
             Charging Station -
-            <span :class="chargingStation.available ? 'text-success' : 'text-danger'">
+            <span v-if="chargingStation.currentCarPlate" class="text-yellow">
+              Charging car {{ chargingStation.currentCarPlate }}
+            </span>
+            <span v-else :class="chargingStation.available ? 'text-success' : 'text-danger'">
               {{ chargingStation.available ? 'Available' : 'Not Available' }}
             </span>
           </h1>
@@ -60,7 +63,7 @@ const formatAddress = (address: Address): string => {
 
         <div v-if="chargingStation.available" class="modal-footer d-flex flex-column justify-content-center">
           <label class="form-label" for="select-car">Select the car you want to plug in</label>
-          <span v-if="props.cars.length === 0" class="alert alert-warning p-2">No cars available.</span>
+          <span v-if="props.cars.length === 0" class="alert alert-danger p-2">No cars available</span>
           <select v-else id="select-car" class="form-select" v-model="selectedCarId">
             <option
               v-for="car in props.cars"

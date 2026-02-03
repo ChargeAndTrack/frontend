@@ -1,3 +1,20 @@
+## [0.7.0](https://github.com/ChargeAndTrack/frontend/compare/0.6.0...0.7.0) (2026-02-03)
+
+### Features
+
+* **home:** add animation when updated the current battery ([3841df3](https://github.com/ChargeAndTrack/frontend/commit/3841df39abcc25a263d56bd7f3b41fdc5e962d30))
+* **home:** add ChargingCarItem and ShowFieldsCard components, use ChargingCarItem in the HomePage and ShowFieldsCard in ProfileCard and ChargingStationCardExpanded components, fix SearchBar input v-model in ManagePage ([d7a52d4](https://github.com/ChargeAndTrack/frontend/commit/d7a52d420be6758c26b79432566231b1035f6d85))
+* **home:** add ChargingStationItem and ListItemsCard components, so add them to the HomePage; refactor CarsCard component using ListItemsCard component ([803dfe9](https://github.com/ChargeAndTrack/frontend/commit/803dfe9bfa8d2531e5f277a9f6ea2740af757596))
+* **home:** add houseNumber to Address interface and formatAddress function ([7afb0d0](https://github.com/ChargeAndTrack/frontend/commit/7afb0d0d6dcc91d39ec6976c89f0f4a290bbc526))
+* **home:** add listener to recharge-update events to update current battery dinamically and stop recharge handler ([70f0d59](https://github.com/ChargeAndTrack/frontend/commit/70f0d59b1eb3ae28222bb92a8dfba6a07bd67d11))
+* **home:** add llmSearchRequest and its handler in HomePage, add v-model to SearchBar textarea, add clear button to ListItemsCard and stop recharge button to ChargingStationItem ([a509223](https://github.com/ChargeAndTrack/frontend/commit/a50922319fb1beb5f9366422d490fbc6fe8e8399))
+* **home:** create Socket instance, add _id to ChargingStation interface and add ChargingStationBody interface, add getChargingStationRequest and stopRechargeRequest ([e2ff161](https://github.com/ChargeAndTrack/frontend/commit/e2ff1616c751d692747d0f9a18aefb5480bca950))
+* replace input with slot in SearchBar component, add SearchBar to HomePage and modify its implementation in ManagePage ([7a96395](https://github.com/ChargeAndTrack/frontend/commit/7a96395a7fa7783f61233e7e380f9d3a85a4bffa))
+
+### Build and continuous integration
+
+* add socket.io-client dependency ([69cfb9a](https://github.com/ChargeAndTrack/frontend/commit/69cfb9ae057d4fb041597952045b310cdbd77e39))
+
 ## [0.6.0](https://github.com/ChargeAndTrack/frontend/compare/0.5.0...0.6.0) (2026-01-30)
 
 ### Features

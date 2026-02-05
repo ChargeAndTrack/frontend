@@ -67,6 +67,23 @@ $border-teal: #{rgba($teal-800, 1)};
     box-shadow: 0 0 0 0.25rem rgba($teal-300, .8);
   }
 
+  .nav-link {
+    color: rgba($white, 0.7);
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+
+    &.focus {
+      color: $white !important;
+      font-weight: 600;
+      opacity: 1;
+      border-bottom: 2px solid $white;
+
+      i {
+        transform: scale(1.2);
+      }
+    }
+  }
+
   .animate-fill {
     background-image: linear-gradient(
       to right,

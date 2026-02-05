@@ -48,10 +48,11 @@ const addChargingStation = async () => {
                     <div class="col-5">
                       <input
                         type="number"
+                        min="1"
                         id="add-power"
                         class="form-control"
                         aria-describedby="Set charging station to add power"
-                        v-model.number="chargingStation.power"
+                        v-model="chargingStation.power"
                         required
                       >
                     </div>

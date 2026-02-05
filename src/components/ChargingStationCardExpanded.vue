@@ -23,10 +23,11 @@ const emit = defineEmits(['remove-charging-station', 'update-charging-station'])
             <div class="col-5">
               <input
                 type="number"
+                min="1"
                 id="update-power"
                 class="form-control"
                 aria-describedby="Update charging station power"
-                v-model.number="chargingStation.power"
+                v-model="chargingStation.power"
                 required
               >
             </div>

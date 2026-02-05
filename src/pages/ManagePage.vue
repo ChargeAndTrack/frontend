@@ -75,21 +75,21 @@ const addChargingStation = async (power: number, address: string) => {
     }
     await addChargingStationRequest(chargingStationToAdd);
     closeModal();
-    showSuccess("Add charging station successfully");
+    showSuccess("Charging station added successfully");
   } catch {}
 };
 
 const updateChargingStation = async () => {
   try {
     await updateChargingStationRequest(chargingStation.station);
-    showSuccess("Update the charging station successfully");
+    showSuccess("Charging station updated successfully");
   } catch {}
 };
 
 const removeChargingStation = async () => {
   try {
     await removeChargingStationRequest(chargingStation.station._id);
-    showSuccess("Removed successfully the charging station!");
+    showSuccess("Charging station removed successfully");
     hideChargingStationCard();
     showConfirmModal.value = false;
   } catch {}
@@ -98,7 +98,7 @@ const removeChargingStation = async () => {
 
 <template>
   <div class="container-fluid justify-content-center overflow-y-hidden">
-    <SearchBar class="row py-4 px-2 sticky-top" @search="searchClosestChargingStation">
+    <SearchBar class="row py-4 px-2" @search="searchClosestChargingStation">
       <template #text-input>
         <input
           type="text"

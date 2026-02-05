@@ -31,10 +31,10 @@ onMounted(() => {
     :class="{ 'login-bg' : !showNavbar }"
   >
     <NavBarTop v-if="showNavbar" class="sticky-top" />
-    <div class="flex-grow-1 d-flex">
+    <div class="flex-grow-1 d-flex pb-4 pb-md-0">
       <RouterView />
     </div>
-    <NavBarBottom v-if="showNavbar" class="d-md-none mt-auto" />
+    <NavBarBottom v-if="showNavbar" class="d-md-none mt-auto fixed-bottom" />
     <MessageToast
       :show="message.show" 
       :msg="message.text" 

@@ -70,7 +70,7 @@ const formatAddress = (address: Address): string => {
               :key="car._id"
               :value="car._id"
             >
-              {{ car.plate }} - {{ car.maxBattery }} kW
+              {{ car.plate }} - {{ car.maxBattery }} kWh
             </option>
           </select>
           <button type="button" class="btn btn-primary mt-3" @click="onPlugIn" :disabled="!selectedCarId">

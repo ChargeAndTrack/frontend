@@ -6,7 +6,7 @@ const authenticationStore = useAuthenticationStore();
 </script>
 
 <template>
-  <nav class="navbar bg-primary">
+  <nav class="navbar bg-primary z-5">
     <ul class="navbar-nav flex-row justify-content-around w-100 px-2">
       <NavButton route-name="Home" icon-name="house" />
       <NavButton route-name="Map" icon-name="geo-alt-fill" />

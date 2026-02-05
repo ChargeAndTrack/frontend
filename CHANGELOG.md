@@ -1,3 +1,17 @@
+## [1.0.1](https://github.com/ChargeAndTrack/frontend/compare/1.0.0...1.0.1) (2026-02-05)
+
+### Bug Fixes
+
+* add min value in power field and change NavButton focus style ([0611837](https://github.com/ChargeAndTrack/frontend/commit/0611837a50da553c7bfa76aa158aea1d299870df))
+* avoid y overflow in LoginPage and add min value in maxBattery field ([48ce07b](https://github.com/ChargeAndTrack/frontend/commit/48ce07b109b3f96066fe9e1e25949445cf9e79a0))
+* update car interface, add parameter to getClosestChargingStationRequest, onMounted HomePage update the store with current cars in charge ([d30d3fc](https://github.com/ChargeAndTrack/frontend/commit/d30d3fcda387be27350ece7fd512264f1a539c76))
+* **view:** navbar bottom fixed position, fix z-indexes, improve success messages and add kWh in maxBattery field ([05ae0d1](https://github.com/ChargeAndTrack/frontend/commit/05ae0d15be16091547ce61becd95a0747c7b1e60))
+
+### Documentation
+
+* add asw report ([cd12096](https://github.com/ChargeAndTrack/frontend/commit/cd120966da177639a5dc8b0fd80d79f6df5b1f13))
+* update README, add favicon for browser tab and change title ([ae79189](https://github.com/ChargeAndTrack/frontend/commit/ae7918986949bf0c2fc0d60a85b36ad081f8a4f8))
+
 ## [1.0.0](https://github.com/ChargeAndTrack/frontend/compare/0.7.0...1.0.0) (2026-02-03)
 
 ### ⚠ BREAKING CHANGES

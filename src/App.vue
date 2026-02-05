@@ -31,7 +31,7 @@ onMounted(() => {
     :class="{ 'login-bg' : !showNavbar }"
   >
     <NavBarTop v-if="showNavbar" class="sticky-top" />
-    <div class="flex-grow-1 d-flex pb-4 pb-md-0">
+    <div class="flex-grow-1 d-flex pb-md-0" :class="{ 'pb-4' : showNavbar }">
       <RouterView />
     </div>
     <NavBarBottom v-if="showNavbar" class="d-md-none mt-auto fixed-bottom" />

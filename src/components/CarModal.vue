@@ -32,7 +32,13 @@ const onConfirm = () => emit('confirm', car.value);
         <form @submit.prevent="onConfirm">
           <div class="modal-body">
             <FormField label="Plate" id="add-car-plate" v-model:value="car.plate" />
-            <FormField label="Max battery" id="add-car-max-battery" inputType="number" v-model:value="car.maxBattery">
+            <FormField
+              label="Max battery"
+              id="add-car-max-battery"
+              inputType="number"
+              :minNumberValue="1"
+              v-model:value="car.maxBattery"
+            >
               <template #extra>
                 <span class="input-group-text bg-transparent">kWh</span>
               </template>

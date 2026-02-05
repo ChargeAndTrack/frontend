@@ -15,7 +15,8 @@ const props = defineProps({
   readonly: {
     type: Boolean,
     default: false
-  }
+  },
+  minNumberValue : Number
 });
 </script>
 
@@ -30,6 +31,7 @@ const props = defineProps({
         v-model="value"
         :required="required"
         :readonly="readonly"
+        :min="minNumberValue"
       />
       <slot name="extra"></slot>
     </div>

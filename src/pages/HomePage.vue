@@ -12,7 +12,7 @@ import { reverseCoordinatesToAddressRequest } from '@/api/location';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import { getChargingStationRequest, stopRechargeRequest } from '@/api/chargingStations';
 import { getSocket } from '@/services/socket';
-import { getCarRequest } from '@/api/cars';
+import { getCarRequest, getCarsRequest } from '@/api/cars';
 import { useChargingStore } from '@/store/charging.store';
 import { useErrorHandler } from '@/api/errorHandling';
 
@@ -50,35 +50,25 @@ const rechargeUpdateCallback = (data: any) => {
     itemToUpdate.animation = true;
     setTimeout(() => (itemToUpdate.animation = false), 2000);
     if (data.level >= 100) {
-      removeChargingCar(itemToUpdate.car._id, itemToUpdate.chargingStation._id);
+      removeChargingCar(itemToUpdate.car._id);
       showSuccess(`Car ${itemToUpdate.car.plate} completed the recharge.`);
     }
   }
 };
 
-onMounted(() => {
-  getSocket().on('recharge-update', rechargeUpdateCallback);
-  chargingStore.inCharge.forEach((item) => {
-    addChargingCar(item.carId, item.chargingStationId);
-  });
-});
-onBeforeUnmount(() => {
-  getSocket().off('recharge-update', rechargeUpdateCallback);
-});
-
-const removeChargingCar = (carId: string, chargingStationId: string) => {
+const removeChargingCar = (carId: string) => {
   getSocket().emit('stop-recharge', carId);
   const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
   if (itemIndex !== -1) {
     carsCharging.value.splice(itemIndex, 1);
   }
-  chargingStore.remove(carId, chargingStationId);
+  chargingStore.remove(carId);
 }
 
 const stopRecharge = async (carId: string, chargingStationId: string) => {
   try {
     await stopRechargeRequest(chargingStationId, carId);
-    removeChargingCar(carId, chargingStationId);
+    removeChargingCar(carId);
   } catch {}
 }
 
@@ -112,6 +102,25 @@ const llmSearch = async () => {
     isChargingStationsListLoading.value = false;
   }
 };
+
+onMounted(async () => {
+  try {
+    const cars = (await getCarsRequest()).data;
+    cars.forEach(car => {
+      if (car.currentChargingStationId) {
+        getSocket().emit('start-recharge', car._id);
+        chargingStore.add(car._id, car.currentChargingStationId!);
+      } else {
+        removeChargingCar(car._id);
+      }
+    });
+  } catch {}
+  getSocket().on('recharge-update', rechargeUpdateCallback);
+  chargingStore.inCharge.forEach((item) => addChargingCar(item.carId, item.chargingStationId));
+});
+onBeforeUnmount(() => {
+  getSocket().off('recharge-update', rechargeUpdateCallback);
+});
 </script>
 
 <template>

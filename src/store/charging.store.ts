@@ -6,15 +6,19 @@ export const useChargingStore = defineStore('charging', () => {
     const inCharge = ref<{ carId: string, chargingStationId: string }[]>([]);
 
     function add(carId: string, chargingStationId: string) {
-        inCharge.value.push({ carId, chargingStationId });
-        localStorage.setItem("inCharge", JSON.stringify(inCharge.value));
+        if (!inCharge.value.some(item => item.carId === carId && item.chargingStationId === chargingStationId )) {
+            inCharge.value.push({ carId, chargingStationId });
+            localStorage.removeItem("inCharge");
+            localStorage.setItem("inCharge", JSON.stringify(inCharge.value));
+        }
     }
 
-    function remove(carId: string, chargingStationId: string) {
-        const itemIndex = inCharge.value.findIndex(c => c.carId === carId && c.chargingStationId === chargingStationId);
+    function remove(carId: string) {
+        const itemIndex = inCharge.value.findIndex(c => c.carId === carId);
         if (itemIndex !== -1) {
             inCharge.value.splice(itemIndex, 1);
         }
+        localStorage.removeItem("inCharge");
         localStorage.setItem("inCharge", JSON.stringify(inCharge.value));
     }
 
@@ -22,7 +26,7 @@ export const useChargingStore = defineStore('charging', () => {
         const savedInCharge = localStorage.getItem("inCharge");
         if (savedInCharge) {
             inCharge.value = JSON.parse(savedInCharge);
-            inCharge.value.forEach(item => getSocket().emit('start-recharge', item.carId, item.chargingStationId));
+            inCharge.value.forEach(item => getSocket().emit('start-recharge', item.carId));
         }
     }
 

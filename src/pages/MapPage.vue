@@ -12,10 +12,8 @@ import { getCarsRequest } from '@/api/cars';
 import type { Car } from '@/types/car';
 import { getSocket } from '@/services/socket';
 import { useErrorHandler } from '@/api/errorHandling';
-import { useChargingStore } from '@/store/charging.store';
 
 const { showSuccess } = useErrorHandler();
-const chargingStore = useChargingStore();
 
 const searchText = ref<string>('');
 const currentCoordinates = ref<Coordinates>({ lng: 0, lat: 25 });
@@ -62,7 +60,7 @@ const updateChargingStationWithCarPlate = (chargingStation: ChargingStationWithC
 
 const onSearchClosestChargingStation = async () => {
   try {
-    const closestChargingStation: ChargingStation = (await getClosestChargingStationRequest(currentCoordinates.value)).data;
+    const closestChargingStation: ChargingStation = (await getClosestChargingStationRequest(currentCoordinates.value, true)).data;
     const cars = (await getCarsRequest()).data;
     centerViewAt(currentCoordinates.value.lng, currentCoordinates.value.lat, true);
     addMarkers([updateChargingStationWithCarPlate(closestChargingStation, cars)]);
@@ -170,7 +168,7 @@ const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlat
       "address": address,
       "currentCarPlate": chargingCar?.plate
     };
-    selectableCars.value = cars.filter(car => !car.isCharging);
+    selectableCars.value = cars.filter(car => !car.currentChargingStationId);
     showChargingStationModal.value = true;
   } catch {}
 };
@@ -178,8 +176,6 @@ const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlat
 const onPlugInCar = async (selectedCarId: string) => {
   try {
     await startRechargeRequest(chargingStationToView.value._id, selectedCarId);
-    getSocket().emit('start-recharge', selectedCarId, chargingStationToView.value._id);
-    chargingStore.add(selectedCarId, chargingStationToView.value._id);
     showChargingStationModal.value = false;
     showSuccess('Car plugged in successfully');
   } catch {}

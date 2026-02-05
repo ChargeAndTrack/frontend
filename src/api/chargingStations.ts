@@ -18,17 +18,17 @@ export const getNearbyChargingStationsRequest = async (coordinates: Coordinates)
                 lng: coordinates.lng,
                 lat: coordinates.lat,
                 radius: DEFAULT_RADIUS_IN_METERS,
-                onlyEnabled: useAuthenticationStore().isAdmin() ? false : true
+                onlyEnabled: true
             }
         }
     );
 };
 
-export async function getClosestChargingStationRequest(coordinates: Coordinates)
+export async function getClosestChargingStationRequest(coordinates: Coordinates, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>>;
-export async function getClosestChargingStationRequest(address: string)
+export async function getClosestChargingStationRequest(address: string, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>>;
-export async function getClosestChargingStationRequest(value: Coordinates | string)
+export async function getClosestChargingStationRequest(value: Coordinates | string, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>> {
     if (typeof value === "string") {
         const location = (await resolveAddressToCoordinatesRequest(value)).data;
@@ -41,7 +41,7 @@ export async function getClosestChargingStationRequest(value: Coordinates | stri
             params: {
                 lng: value.lng,
                 lat: value.lat,
-                onlyEnabledAndAvailable: useAuthenticationStore().isAdmin() ? false : true
+                'onlyEnabledAndAvailable': useAuthenticationStore().isAdmin() ? (onlyEnabledAndAvailable ?? false) : true
             }
         }
     );

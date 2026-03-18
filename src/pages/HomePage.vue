@@ -80,11 +80,8 @@ const stopRecharge = async (carId: string, chargingStationId: string) => {
   } catch {}
 }
 
-async function addChargingStationToList(chargingStation: any) {
-  const addr = (await reverseCoordinatesToAddressRequest({
-    longitude: chargingStation.location.coordinates[0],
-    latitude: chargingStation.location.coordinates[1] }
-  )).data;
+async function addChargingStationToList(chargingStation: ChargingStation) {
+  const addr = (await reverseCoordinatesToAddressRequest(chargingStation.location)).data;
   chargingStations.push({
     station: { _id: chargingStation._id, power: chargingStation.power },
     address: {

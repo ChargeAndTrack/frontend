@@ -12,7 +12,7 @@ const props = defineProps<{
     <div class="d-flex align-items-center">
       <div class="ms-3">
         <div class="fw-semibold">{{ props.chargingStationAddress }}</div>
-        <small class="text-muted">Power: {{ props.chargingStation.power }}</small>
+        <small class="text-muted">Power: {{ props.chargingStation.power }} kW</small>
       </div>
     </div>
     <i class="bi bi-ev-station fs-4"></i>

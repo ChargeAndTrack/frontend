@@ -56,6 +56,14 @@ const rechargeUpdateCallback = (data: any) => {
   }
 };
 
+const rechargeCompletedCallback = (data: any) => {
+  const itemToUpdate = carsCharging.value.find(c => c.car._id === data.id);
+  if (itemToUpdate?.car !== undefined) {
+    removeChargingCar(itemToUpdate.car._id);
+    showSuccess(`Car ${itemToUpdate.car.plate} completed the recharge.`);
+  }
+};
+
 const removeChargingCar = (carId: string) => {
   getSocket().emit('stop-recharge', carId);
   const itemIndex = carsCharging.value.findIndex(c => c.car._id === carId);
@@ -116,10 +124,12 @@ onMounted(async () => {
     });
   } catch {}
   getSocket().on('recharge-update', rechargeUpdateCallback);
+  getSocket().on('recharge-completed', rechargeCompletedCallback);
   chargingStore.inCharge.forEach((item) => addChargingCar(item.carId, item.chargingStationId));
 });
 onBeforeUnmount(() => {
   getSocket().off('recharge-update', rechargeUpdateCallback);
+  getSocket().off('recharge-completed', rechargeCompletedCallback);
 });
 </script>
 

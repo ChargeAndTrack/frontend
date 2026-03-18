@@ -17,11 +17,8 @@ const stopRecharge = () => emit('stop-recharge', props.car._id, props.chargingSt
 
 onMounted(async () => {
   try {
-    const address = await reverseCoordinatesToAddressRequest({
-      lng: props.chargingStation.location?.coordinates[0]!,
-      lat: props.chargingStation.location?.coordinates[1]!
-    });
-    chargingStationAddress.value = formatAddress(address.data.address);
+    const address = await reverseCoordinatesToAddressRequest(props.chargingStation.location || { latitude: 0, longitude: 0 });
+    chargingStationAddress.value = formatAddress(address.data);
   } catch {}
 });
 </script>

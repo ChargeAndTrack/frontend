@@ -5,7 +5,7 @@ import ShowChargingStationModal from '@/components/ShowChargingStationModal.vue'
 import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import type { ChargingStation, ChargingStationWithCarPlate, ShowableChargingStation } from '@/types/chargingStation';
-import type { Address, Coordinates } from '@/types/location';
+import type { Address, Location } from '@/types/location';
 import L from 'leaflet';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { getCarsRequest } from '@/api/cars';
@@ -16,7 +16,7 @@ import { useErrorHandler } from '@/api/errorHandling';
 const { showSuccess } = useErrorHandler();
 
 const searchText = ref<string>('');
-const currentCoordinates = ref<Coordinates>({ lng: 0, lat: 25 });
+const currentCoordinates = ref<Location>({ longitude: 0, latitude: 25 });
 const showFindClosestButton = ref(false);
 
 let map: L.Map;
@@ -26,7 +26,7 @@ let markers: Map<string, L.Marker> = new Map();
 onMounted(() => {
   getSocket().on('charging-station-updated', onUpdateChargingStation);
   map = L.map('map', { zoomControl: false })
-    .setView([currentCoordinates.value.lat, currentCoordinates.value.lng], 2);
+    .setView([currentCoordinates.value.latitude, currentCoordinates.value.longitude], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     minZoom: 2,
@@ -62,7 +62,7 @@ const onSearchClosestChargingStation = async () => {
   try {
     const closestChargingStation: ChargingStation = (await getClosestChargingStationRequest(currentCoordinates.value, true)).data;
     const cars = (await getCarsRequest()).data;
-    centerViewAt(currentCoordinates.value.lng, currentCoordinates.value.lat, true);
+    centerViewAt(currentCoordinates.value.longitude, currentCoordinates.value.latitude, true);
     addMarkers([updateChargingStationWithCarPlate(closestChargingStation, cars)]);
     showFindClosestButton.value = false;
   } catch {}
@@ -70,11 +70,11 @@ const onSearchClosestChargingStation = async () => {
 
 const onSearchNearbyChargingStations = async () => {
   try {
-    const coordinates: Coordinates = (await resolveAddressToCoordinatesRequest(searchText.value)).data;
-    currentCoordinates.value = coordinates;
+    const location: Location = (await resolveAddressToCoordinatesRequest(searchText.value)).data;
+    currentCoordinates.value = location;
     showFindClosestButton.value = true;
-    const chargingStations: ChargingStation[] = (await getNearbyChargingStationsRequest(coordinates)).data;
-    centerViewAt(coordinates.lng, coordinates.lat);
+    const chargingStations: ChargingStation[] = (await getNearbyChargingStationsRequest(location)).data;
+    centerViewAt(location.longitude, location.latitude);
     const cars = (await getCarsRequest()).data;
     const updatedChargingStations: ChargingStationWithCarPlate[] = chargingStations.map(
       chargingStation => updateChargingStationWithCarPlate(chargingStation, cars)
@@ -94,11 +94,11 @@ const addMarkers = (chargingStations: ChargingStationWithCarPlate[]): void => {
   markersLayer.clearLayers();
   markers.clear();
   chargingStations.forEach(chargingStation => {
-    const coordinates: Coordinates = {
-      lng: chargingStation.location.coordinates[0],
-      lat: chargingStation.location.coordinates[1]
+    const location: Location = {
+      longitude: chargingStation.location.longitude,
+      latitude: chargingStation.location.latitude
     };
-    const marker = setMarker(L.marker([coordinates.lat, coordinates.lng]), chargingStation)
+    const marker = setMarker(L.marker([location.latitude, location.longitude]), chargingStation)
       .addTo(markersLayer);
     markers.set(chargingStation._id, marker);
   });
@@ -106,9 +106,9 @@ const addMarkers = (chargingStations: ChargingStationWithCarPlate[]): void => {
 };
 
 const setMarker = (marker: L.Marker, chargingStation: ChargingStationWithCarPlate): L.Marker => {
-  const coordinates: Coordinates = {
-    lng: chargingStation.location.coordinates[0],
-    lat: chargingStation.location.coordinates[1]
+  const location: Location = {
+    longitude: chargingStation.location.longitude,
+    latitude: chargingStation.location.latitude
   };
   const openPopup = marker.isPopupOpen();
   if (marker.isPopupOpen()) {
@@ -138,7 +138,7 @@ const setMarker = (marker: L.Marker, chargingStation: ChargingStationWithCarPlat
     if (!button) {
       throw new Error('View button not found in charging station ' + chargingStation._id + ' popup');
     }
-    button.onclick = async () => await onViewChargingStation(chargingStation, coordinates);
+    button.onclick = async () => await onViewChargingStation(chargingStation, location);
   };
   const updatedMarker = marker.setIcon(icon).bindPopup(popupContent).on('popupopen', popupListener);
   if (openPopup) {
@@ -153,16 +153,16 @@ const chargingStationToView = ref<ShowableChargingStation>({
   power: 0,
   available: true,
   enabled: true,
-  location: { type: 'Point', coordinates: [0, 0] },
+  location: { longitude: 0, latitude: 0 },
   address: { street: '', city: '', country: '' }
 });
 const selectableCars = ref<Car[]>([]);
 
-const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlate, coordinates: Coordinates) => {
+const onViewChargingStation = async (chargingStation: ChargingStationWithCarPlate, location: Location) => {
   try {
     const cars: Car[] = (await getCarsRequest()).data;
     const chargingCar: Car | undefined = cars.find(car => car._id === chargingStation.currentCarId);
-    const address: Address = (await reverseCoordinatesToAddressRequest(coordinates)).data.address;
+    const address: Address = (await reverseCoordinatesToAddressRequest(location)).data;
     chargingStationToView.value = {
       ...chargingStation,
       "address": address,
@@ -194,7 +194,7 @@ const onPlugInCar = async (selectedCarId: string) => {
             <input
               type="text"
               class="form-control text-truncate"
-              placeholder="Search for an address"        
+              placeholder="Search for an address"
               aria-label="Search for an address"
               id="searchbar-map"
               v-model="searchText"

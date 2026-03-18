@@ -3,20 +3,19 @@ import { api } from "./api";
 import { resolveAddressToCoordinatesRequest } from "./location";
 import { useAuthenticationStore } from "@/store/authentication.store";
 import type { AxiosResponse } from "node_modules/axios/index.d.cts";
-import type { Coordinates } from "@/types/location";
-
+import type { Location } from "@/types/location";
 const CHARGING_STATION_URL: string = "/charging-stations";
 const chargingStationUrl = (chargingStationId: string) => `${CHARGING_STATION_URL}/${chargingStationId}`;
 export const DEFAULT_RADIUS_IN_METERS: number = 5000;
 
-export const getNearbyChargingStationsRequest = async (coordinates: Coordinates)
+export const getNearbyChargingStationsRequest = async (location: Location)
         : Promise<AxiosResponse<ChargingStation[]>> => {
     return await api.get<ChargingStation[]>(
         `${CHARGING_STATION_URL}/near`,
         {
             params: {
-                lng: coordinates.lng,
-                lat: coordinates.lat,
+                lng: location.longitude,
+                lat: location.latitude,
                 radius: DEFAULT_RADIUS_IN_METERS,
                 onlyEnabled: true
             }
@@ -24,11 +23,11 @@ export const getNearbyChargingStationsRequest = async (coordinates: Coordinates)
     );
 };
 
-export async function getClosestChargingStationRequest(coordinates: Coordinates, onlyEnabledAndAvailable?: boolean)
+export async function getClosestChargingStationRequest(location: Location, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>>;
 export async function getClosestChargingStationRequest(address: string, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>>;
-export async function getClosestChargingStationRequest(value: Coordinates | string, onlyEnabledAndAvailable?: boolean)
+export async function getClosestChargingStationRequest(value: Location | string, onlyEnabledAndAvailable?: boolean)
         : Promise<AxiosResponse<ChargingStation>> {
     if (typeof value === "string") {
         const location = (await resolveAddressToCoordinatesRequest(value)).data;
@@ -39,8 +38,8 @@ export async function getClosestChargingStationRequest(value: Coordinates | stri
         `${CHARGING_STATION_URL}/closest`,
         {
             params: {
-                lng: value.lng,
-                lat: value.lat,
+                lng: value.longitude,
+                lat: value.latitude,
                 'onlyEnabledAndAvailable': useAuthenticationStore().isAdmin() ? (onlyEnabledAndAvailable ?? false) : true
             }
         }

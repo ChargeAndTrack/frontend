@@ -7,7 +7,7 @@ import FloatingActionButton from '@/components/FloatingActionButton.vue';
 import LoadingSpinner from '@/components/LoadingSpinner.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import type { AddChargingStationBody, UpdatableChargingStation } from '@/types/chargingStation';
-import { createGeoPoint, formatAddress, type Address, type Coordinates } from '@/types/location';
+import { formatAddress, type Address, type Location } from '@/types/location';
 import { reactive, ref } from 'vue';
 import { useErrorHandler } from '@/api/errorHandling';
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue';
@@ -24,7 +24,7 @@ const chargingStation = reactive<{
   station: UpdatableChargingStation,
   address: Address
 }>({
-  station: { _id: '', power: 0, enabled: true, location: { type: 'Point', coordinates: [0, 0] } },
+  station: { _id: '', power: 0, enabled: true, location: { longitude: 0, latitude: 0 } },
   address: { street: '', city: '', country: '' }
 });
 
@@ -39,20 +39,20 @@ const searchClosestChargingStation = async () => {
   try {
     const res = (await getClosestChargingStationRequest(searchText.value)).data;
     showChargingStationCard();
-    const coords: Coordinates = {
-      lng: res.location.coordinates[0],
-      lat: res.location.coordinates[1]
+    const location: Location = {
+      longitude: res.location.longitude,
+      latitude: res.location.latitude
     };
     chargingStation.station = {
       _id: res._id,
       power: res.power,
       enabled: res.enabled,
       location: {
-        type: res.location.type,
-        coordinates: [coords.lng, coords.lat]
+        longitude: location.longitude,
+        latitude: location.latitude
       }
     };
-    const address = (await reverseCoordinatesToAddressRequest(coords)).data.address;
+    const address = (await reverseCoordinatesToAddressRequest(location)).data;
     chargingStation.address = {
       street: address.street,
       houseNumber: address.houseNumber,
@@ -71,7 +71,10 @@ const addChargingStation = async (power: number, address: string) => {
     const coordinates = (await resolveAddressToCoordinatesRequest(address)).data;
     const chargingStationToAdd: AddChargingStationBody = {
       "power": power,
-      location: createGeoPoint(coordinates)
+      location: {
+        longitude: coordinates.longitude,
+        latitude: coordinates.latitude
+      }
     }
     await addChargingStationRequest(chargingStationToAdd);
     closeModal();

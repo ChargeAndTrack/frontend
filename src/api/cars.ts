@@ -21,6 +21,6 @@ export const updateCarRequest = async (carId: string, car: CarBody): Promise<Axi
     return await api.put<Car>(carEndpoint(carId), car);
 }
 
-export const deleteCarRequest = async (carId: string): Promise<AxiosResponse<{ cars: Car[] }>> => {
-    return await api.delete<{ cars: Car[] }>(carEndpoint(carId));
+export const deleteCarRequest = async (carId: string): Promise<AxiosResponse<Car[]>> => {
+    return await api.delete<Car[]>(carEndpoint(carId));
 }

@@ -75,7 +75,7 @@ const onDeleteCar = async (carData: { id: string, plate: string }): Promise<void
 };
 const onConfirmDeleteCar = async (): Promise<void> => {
   try {
-    const cars: Car[] = (await deleteCarRequest(deleteCarId.value)).data.cars;
+    const cars: Car[] = (await deleteCarRequest(deleteCarId.value)).data;
     user.value.cars = cars;
     showConfirmDeleteModal.value = false;
     showSuccess('Car deleted successfully');
